@@ -16,7 +16,8 @@ export default function Home() {
           Convert any HTML (or URL) to a pixel-perfect PDF with a single HTTP
           request.
           <br />
-          Your first <strong>50&nbsp;pages&nbsp;/&nbsp;month</strong> are free.
+          Your first <strong>50&nbsp;pages / month</strong>&nbsp;(up to&nbsp;
+          <strong>5&nbsp;conversions per day</strong>) are free.
         </p>
 
         {/* ── Free-key signup ─────────────────────────────── */}

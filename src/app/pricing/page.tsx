@@ -1,12 +1,28 @@
 /* src/app/pricing/page.tsx */
 import Link from 'next/link';
 
-const API_BASE = 'https://api.fileslap.com'; // <— live API host
+const API_BASE = 'https://api.fileslap.com'; // live API host
 
 const plans = [
-  { name: 'Free',    price: '$0',  pages: '50 pages / mo',     highlight: false },
-  { name: 'Starter', price: '$9',  pages: '2 000 pages / mo',  highlight: true  },
-  { name: 'Pro',     price: '$29', pages: '12 000 pages / mo', highlight: false },
+  {
+    name: 'Free',
+    price: '$0',
+    // ⬇ added daily cap note
+    pages: '50 pages / mo · 5 / day',
+    highlight: false,
+  },
+  {
+    name: 'Starter',
+    price: '$9',
+    pages: '2 000 pages / mo',
+    highlight: true,
+  },
+  {
+    name: 'Pro',
+    price: '$29',
+    pages: '12 000 pages / mo',
+    highlight: false,
+  },
 ];
 
 export default function Pricing() {
