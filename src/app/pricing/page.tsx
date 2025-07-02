@@ -1,31 +1,26 @@
 /* src/app/pricing/page.tsx */
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-const API_BASE = 'https://api.fileslap.com'; // live API host
+const API_BASE = 'https://api.fileslap.com';              // live API host
 
+/* ── plan definitions (display only) ─────────────────────────────── */
 const plans = [
-  {
-    name: 'Free',
-    price: '$0',
-    // ⬇ added daily cap note
-    pages: '50 pages / mo · 5 / day',
-    highlight: false,
-  },
-  {
-    name: 'Starter',
-    price: '$9',
-    pages: '2 000 pages / mo',
-    highlight: true,
-  },
-  {
-    name: 'Pro',
-    price: '$29',
-    pages: '12 000 pages / mo',
-    highlight: false,
-  },
+  { name: 'Free',    price: '$0',  pages: '50 pages / mo · 5 per day', highlight: false },
+  { name: 'Starter', price: '$9',  pages: '2 000 pages / mo',          highlight: true  },
+  { name: 'Pro',     price: '$29', pages: '12 000 pages / mo',         highlight: false },
 ];
 
 export default function Pricing() {
+  /* ── pull any stored key so we can pre-fill the subscribe links ── */
+  const [apiKey, setApiKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setApiKey(localStorage.getItem('fs_api_key'));
+  }, []);
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <h1 className="mb-2 text-center text-4xl font-bold">Pricing</h1>
@@ -54,10 +49,14 @@ export default function Pricing() {
 
             {p.name !== 'Free' ? (
               <Link
-                href={`${API_BASE}/api/subscribe/${p.name.toLowerCase()}?key=YOUR_API_KEY`}
+                href={
+                  apiKey
+                    ? `${API_BASE}/api/subscribe/${p.name.toLowerCase()}?key=${apiKey}`
+                    : '/#get-key' /* fallback to signup section */
+                }
                 className="inline-block rounded bg-blue-600 px-5 py-3 text-white transition hover:bg-blue-700"
               >
-                Subscribe
+                {apiKey ? 'Subscribe' : 'Get a free key first'}
               </Link>
             ) : (
               <span className="inline-block rounded border border-blue-600 px-5 py-3 text-blue-600">
@@ -69,7 +68,7 @@ export default function Pricing() {
       </div>
 
       <p className="mt-12 text-center text-sm text-gray-500">
-        Overage: $0.002 per page beyond your plan&apos;s quota.
+        Overage: $0.002 per page beyond your plan’s quota.
       </p>
     </main>
   );
