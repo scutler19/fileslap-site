@@ -10,7 +10,7 @@ export default function SignupForm() {
   const [error,   setError]   = useState<string | null>(null);
   const [copied,  setCopied]  = useState(false);
 
-  /* ── pull any prior key from localStorage on first render ───────── */
+  /* ── load any previously-stored key ──────────────────────────────── */
   useEffect(() => {
     const stored = localStorage.getItem('fs_api_key');
     if (stored) setApiKey(stored);
@@ -25,11 +25,11 @@ export default function SignupForm() {
       const res = await fetch('https://api.fileslap.com/api/signup', {
         method : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body   : JSON.stringify({ email: email.trim() || undefined }) // email optional
+        body   : JSON.stringify({ email: email.trim() || undefined })
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const { apiKey } = await res.json() as { apiKey: string };
+      const { apiKey } = (await res.json()) as { apiKey: string };
 
       /* save for later pages (pricing / success) */
       localStorage.setItem('fs_api_key', apiKey);
@@ -41,7 +41,7 @@ export default function SignupForm() {
     }
   }
 
-  /* ── copy helper ────────────────────────────────────────────────── */
+  /* ── copy helper ─────────────────────────────────────────────────── */
   async function copy() {
     if (!apiKey) return;
     await navigator.clipboard.writeText(apiKey);
@@ -76,9 +76,8 @@ export default function SignupForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium">
-              Email <span className="text-gray-500">(optional)</span>
+              Email&nbsp;<span className="text-gray-500">(optional)</span>
             </label>
-
             <input
               type="email"
               value={email}
