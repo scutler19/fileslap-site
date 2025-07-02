@@ -51,7 +51,7 @@ export default function SuccessClient() {
 
             {/* NEW: manage‐subscription link */}
             <Link
-              href={`/api/billing?key=${apiKey}`}
+              href={`https://api.fileslap.com/api/billing?key=${apiKey}`}
               className="rounded border border-blue-600 px-4 py-2 font-medium text-blue-600 transition hover:bg-blue-50"
             >
               Manage subscription
