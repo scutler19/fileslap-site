@@ -2,28 +2,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-/* ── helpers ───────────────────────────────────────────────────── */
-function getKey(): string | null {
-  // 1) localStorage
+/* helper: look for the key */
+function fetchKey(): string | null {
   const ls = localStorage.getItem('fs_api_key');
   if (ls) return ls;
 
-  // 2) cookie (works on both fileslap.com & www.fileslap.com)
   const m = document.cookie.match(/(?:^|;\s*)fs_api_key=([^;]+)/);
   return m ? decodeURIComponent(m[1]) : null;
 }
 
 export default function SuccessClient() {
-  const params              = useSearchParams();
-  const sessionId           = params.get('session_id');
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setApiKey(getKey());
+    setApiKey(fetchKey());
   }, []);
 
   async function copy() {
@@ -37,16 +32,10 @@ export default function SuccessClient() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">
       <h1 className="text-4xl font-bold text-green-600">Payment&nbsp;successful!</h1>
 
-      {sessionId && (
-        <p className="text-sm text-gray-500">
-          Stripe session&nbsp;ID:&nbsp;<code>{sessionId}</code>
-        </p>
-      )}
-
       {apiKey ? (
         <>
           <p className="text-lg text-gray-700 text-center">
-            Your subscription is now active — continue using your existing key:
+            Your subscription is active — keep using your API&nbsp;key:
           </p>
 
           <code className="block max-w-full break-all rounded bg-gray-100 p-4 text-sm text-gray-900">
