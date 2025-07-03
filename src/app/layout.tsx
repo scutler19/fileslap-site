@@ -17,6 +17,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      {/* Plausible analytics */}
+      <head>
+        <script
+          defer
+          data-domain="fileslap.com"
+          src="https://plausible.io/js/script.outbound-links.js"
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.plausible = window.plausible || function () {
+                (window.plausible.q = window.plausible.q || []).push(arguments);
+              };
+            `,
+          }}
+        />
+      </head>
+
       <body
         className={`${inter.className} min-h-screen bg-gray-50 text-gray-900 antialiased`}
       >
