@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-
 type Plan = {
   name: string;
   price: string;
@@ -15,21 +13,7 @@ type Plan = {
 };
 
 export default function Pricing() {
-  const [apiKey, setApiKey] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Check for existing API key in localStorage or cookie
-    const stored = localStorage.getItem('fs_api_key');
-    if (stored) {
-      setApiKey(stored);
-    } else {
-      // Fallback to cookie
-      const m = document.cookie.match(/(?:^|;\s*)fs_api_key=([^;]+)/);
-      if (m) {
-        setApiKey(decodeURIComponent(m[1]));
-      }
-    }
-  }, []);
+  // Removed unused apiKey state and useEffect
 
   const plans: Plan[] = [
     {

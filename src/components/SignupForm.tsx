@@ -81,7 +81,7 @@ export default function SignupForm() {
           </button>
 
           <p className="mt-4 text-sm text-white/60 text-center">
-            Store this key securely — you won't see it again.
+            Store this key securely — you won&apos;t see it again.
           </p>
         </>
       ) : (

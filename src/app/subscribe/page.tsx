@@ -49,7 +49,7 @@ export default function SubscribePage() {
   const [apiKey, setApiKey] = useState('');
   const [hasExistingKey, setHasExistingKey] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const selectedPlanData = plans.find(p => p.id === selectedPlan);
 
@@ -72,7 +72,7 @@ export default function SubscribePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    // setError(null);
     setLoading(true);
 
     try {
@@ -102,10 +102,10 @@ export default function SubscribePage() {
       const stripeUrl = `https://api.fileslap.com/api/subscribe/${selectedPlan}?key=${finalApiKey}`;
       window.location.href = stripeUrl;
 
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-      setLoading(false);
-    }
+          } catch {
+        // setError('Something went wrong. Please try again.');
+        setLoading(false);
+      }
   };
 
   return (

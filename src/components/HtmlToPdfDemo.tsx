@@ -28,7 +28,7 @@ export default function HtmlToPdfDemo() {
         // If there's an error, assume 3 attempts remaining
         setRemainingAttempts(3);
       }
-    } catch (error) {
+    } catch {
       // Silently fail - this is just for checking attempts
       setRemainingAttempts(3);
     }
@@ -77,7 +77,7 @@ export default function HtmlToPdfDemo() {
       a.download = "fileslap-demo.pdf";
       a.click();
       window.URL.revokeObjectURL(url);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError("Conversion failed. Please try again.");
       console.error(e);
     } finally {

@@ -60,7 +60,7 @@ export default function SuccessClient() {
         </>
       ) : (
         <p className="max-w-md text-center text-lg text-white/80">
-          Haven't generated an API key yet?{' '}
+          Haven&apos;t generated an API key yet?{' '}
           <Link href="/signup" className="text-[#1DEE7F] underline">
             Get one here
           </Link>.
