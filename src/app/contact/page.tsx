@@ -42,7 +42,7 @@ export default function ContactPage() {
       <div className="text-center p-8 rounded-lg border border-[#1DEE7F]/30 bg-[#111217]">
         <h3 className="text-2xl font-semibold text-[#1DEE7F] mb-4">Get in Touch</h3>
         <p className="text-white/80 mb-6">
-          Send us an email and we'll get back to you within 24 hours.
+          Send us an email and we&apos;ll get back to you within 24 hours.
         </p>
         <a
           href="mailto:support@fileslap.com"
