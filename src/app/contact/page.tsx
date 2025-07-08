@@ -84,7 +84,7 @@ export default function ContactPage() {
 
       <div className="mt-8 text-center">
         <Link
-          href="/pricing"
+          href="/#pricing"
           className="text-[#1DEE7F] hover:underline"
         >
           ← Back to Pricing
