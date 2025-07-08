@@ -7,7 +7,7 @@ export default function ContactPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-white mb-4">Contact Us</h1>
         <p className="text-lg text-white/80 max-w-2xl mx-auto">
-          Need higher volume pricing or have questions about FileSlap? We're here to help.
+          Need higher volume pricing or have questions about FileSlap? We&apos;re here to help.
         </p>
       </div>
 
@@ -28,7 +28,7 @@ export default function ContactPage() {
         <div className="p-6 rounded-lg border border-[#1DEE7F]/30 bg-[#111217]">
           <h3 className="text-xl font-semibold text-[#1DEE7F] mb-4">Support</h3>
           <p className="text-white/80 mb-4">
-            Have technical questions or need help integrating FileSlap?
+            Haven&apos;t generated an API key yet? We&apos;re happy to help.
           </p>
           <ul className="text-sm text-white/60 space-y-2">
             <li>• API integration help</li>
