@@ -154,14 +154,21 @@ export default function RootLayout({
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-white/60">
                 <span>built by</span>
-                <img
-                  src="/exitcodezer0_logo_512x512.png"
-                  alt="ExitCodeZer0 logo"
-                  width={32}
-                  height={32}
-                  className="rounded-full shadow-sm bg-[#0D0D11]"
-                  style={{ objectFit: 'cover' }}
-                />
+                <a
+                  href="https://x.com/ExitCodeZer0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <img
+                    src="/exitcodezer0_logo_512x512.png"
+                    alt="ExitCodeZer0 logo"
+                    width={32}
+                    height={32}
+                    className="rounded-full shadow-sm bg-[#0D0D11]"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </a>
                 <a
                   href="https://x.com/ExitCodeZer0"
                   target="_blank"
