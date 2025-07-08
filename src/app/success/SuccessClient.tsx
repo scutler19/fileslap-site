@@ -29,39 +29,39 @@ export default function SuccessClient() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">
-      <h1 className="text-4xl font-bold text-green-600">Payment&nbsp;successful!</h1>
+      <h1 className="text-4xl font-bold text-[#1DEE7F]">Payment successful!</h1>
 
       {apiKey ? (
         <>
-          <p className="text-lg text-gray-700 text-center">
-            Your subscription is now active. Keep using your&nbsp;key:
+          <p className="text-lg text-white/80 text-center">
+            Your subscription is now active. Keep using your key:
           </p>
 
-          <code className="block max-w-full break-all rounded bg-gray-100 p-4 text-sm text-gray-900">
+          <code className="block max-w-full break-all rounded-lg bg-[#0D0D11] p-4 text-sm text-[#A5FFCB] border border-[#1DEE7F]/20">
             {apiKey}
           </code>
 
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={copy}
-              className="rounded bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700"
+              className="rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] transition hover:brightness-110"
             >
               {copied ? 'Copied!' : 'Copy key'}
             </button>
 
-            {/* NEW: manage‐subscription link */}
+            {/* Manage subscription link */}
             <Link
               href={`https://api.fileslap.com/api/billing?key=${apiKey}`}
-              className="rounded border border-blue-600 px-4 py-2 font-medium text-blue-600 transition hover:bg-blue-50"
+              className="rounded-full border border-[#1DEE7F] px-6 py-3 font-medium text-white transition hover:bg-[#1DEE7F]/10"
             >
               Manage subscription
             </Link>
           </div>
         </>
       ) : (
-        <p className="max-w-md text-center text-lg text-gray-700">
-          Haven’t generated an API&nbsp;key yet?&nbsp;
-          <Link href="/#get-key" className="text-blue-600 underline">
+        <p className="max-w-md text-center text-lg text-white/80">
+          Haven't generated an API key yet?{' '}
+          <Link href="/signup" className="text-[#1DEE7F] underline">
             Get one here
           </Link>.
         </p>
@@ -70,15 +70,15 @@ export default function SuccessClient() {
       <div className="flex flex-wrap justify-center gap-4 pt-6">
         <Link
           href="/docs"
-          className="rounded bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700"
+          className="rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] transition hover:brightness-110"
         >
           Read the Docs
         </Link>
         <Link
           href="/pricing"
-          className="rounded border border-blue-600 px-6 py-3 font-medium text-blue-600 transition hover:bg-blue-50"
+          className="rounded-full border border-[#1DEE7F] px-6 py-3 font-medium text-white transition hover:bg-[#1DEE7F]/10"
         >
-          View&nbsp;Plans
+          View Plans
         </Link>
       </div>
     </main>
