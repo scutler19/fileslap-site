@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const DAILY_LIMIT = 3;             // requests per day
-const WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
 const hits = new Map<string, { count: number; date: string }>();
 
 // Use environment variable for API key, fallback to hardcoded for demo

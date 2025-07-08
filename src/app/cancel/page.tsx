@@ -9,7 +9,7 @@ export default function Cancel() {
       <h1 className="mb-4 text-4xl font-bold text-red-400">Checkout canceled</h1>
       <p className="mb-6 text-center text-lg text-white/80 max-w-md">
         No worries—your card has not been charged.
-        You can restart the checkout process whenever you're ready.
+        You can restart the checkout process whenever you&apos;re ready.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4">
