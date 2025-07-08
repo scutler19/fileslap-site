@@ -1,7 +1,38 @@
 /* src/app/docs/page.tsx */
-'use client';
-
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'API Documentation | FileSlap',
+  description: 'Complete FileSlap API documentation. Learn how to convert HTML to PDF with our REST API. Code examples in cURL, Node.js, Python, and JavaScript.',
+  keywords: [
+    'FileSlap API',
+    'HTML to PDF API',
+    'API documentation',
+    'PDF conversion API',
+    'REST API',
+    'API examples',
+    'cURL examples',
+    'Node.js API',
+    'Python API',
+    'JavaScript API'
+  ],
+  openGraph: {
+    title: 'FileSlap API Documentation | HTML to PDF Conversion',
+    description: 'Complete FileSlap API documentation. Learn how to convert HTML to PDF with our REST API. Code examples in cURL, Node.js, Python, and JavaScript.',
+    url: 'https://fileslap.com/docs',
+    siteName: 'FileSlap',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'FileSlap API Documentation | HTML to PDF Conversion',
+    description: 'Complete FileSlap API documentation with code examples.',
+  },
+  alternates: {
+    canonical: 'https://fileslap.com/docs',
+  },
+};
 
 export default function Docs() {
   return (

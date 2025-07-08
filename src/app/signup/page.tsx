@@ -1,6 +1,36 @@
 /* src/app/signup/page.tsx */
 import SignupForm from '@/components/SignupForm';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Get Free API Key | FileSlap',
+  description: 'Get your free FileSlap API key and start converting HTML to PDF instantly. Free tier includes 50 pages per month. No credit card required.',
+  keywords: [
+    'free API key',
+    'HTML to PDF API',
+    'FileSlap signup',
+    'PDF conversion API',
+    'free tier',
+    'API registration',
+    'developer signup'
+  ],
+  openGraph: {
+    title: 'Get Your Free FileSlap API Key | HTML to PDF Conversion',
+    description: 'Get your free FileSlap API key and start converting HTML to PDF instantly. Free tier includes 50 pages per month.',
+    url: 'https://fileslap.com/signup',
+    siteName: 'FileSlap',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Get Your Free FileSlap API Key | HTML to PDF Conversion',
+    description: 'Get your free FileSlap API key and start converting HTML to PDF instantly.',
+  },
+  alternates: {
+    canonical: 'https://fileslap.com/signup',
+  },
+};
 
 export default function SignupPage() {
   return (

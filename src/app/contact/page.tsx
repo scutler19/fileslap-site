@@ -1,5 +1,35 @@
 /* src/app/contact/page.tsx */
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contact Us | FileSlap',
+  description: 'Contact FileSlap for enterprise pricing, technical support, or questions about our HTML to PDF conversion API. Get help with integration and custom requirements.',
+  keywords: [
+    'contact FileSlap',
+    'enterprise pricing',
+    'technical support',
+    'HTML to PDF support',
+    'API support',
+    'custom requirements',
+    'FileSlap contact'
+  ],
+  openGraph: {
+    title: 'Contact FileSlap | Enterprise Pricing & Support',
+    description: 'Contact FileSlap for enterprise pricing, technical support, or questions about our HTML to PDF conversion API.',
+    url: 'https://fileslap.com/contact',
+    siteName: 'FileSlap',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Contact FileSlap | Enterprise Pricing & Support',
+    description: 'Contact FileSlap for enterprise pricing and technical support.',
+  },
+  alternates: {
+    canonical: 'https://fileslap.com/contact',
+  },
+};
 
 export default function ContactPage() {
   return (
