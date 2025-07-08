@@ -1,12 +1,14 @@
 /* src/app/globals.css  ──────────────────────────────────────────── */
 
-/* 1) Load Inter (latin subset). Keep this ABOVE the Tailwind import. */
-@import '@fontsource/inter/latin.css';
-
 /* 2) Pull in all Tailwind layers (base, components, utilities). */
 @import 'tailwindcss';
 
 /* 3) Global element styles */
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* 4) Code elements use Roboto Mono */
+code, pre {
+  font-family: var(--font-roboto-mono), monospace;
 }

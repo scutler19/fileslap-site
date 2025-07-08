@@ -1,79 +1,51 @@
 /* src/app/layout.tsx */
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Roboto_Mono } from 'next/font/google';
 // import Image from 'next/image';
+import Link from 'next/link';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
+const robotoMono = Roboto_Mono({ 
+  subsets: ['latin'],
+  variable: '--font-roboto-mono',
+});
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.fileslap.com'),
   title: {
-    default: 'FileSlap – HTML to PDF API | Convert Web Pages to PDF Instantly',
-    template: '%s | FileSlap'
+    default: 'FileSlap · HTML-to-PDF API for Developers',
+    template: '%s | FileSlap',
   },
-  description: 'Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds. Free tier includes 50 pages/month. Simple, reliable, and secure.',
-  keywords: [
-    'HTML to PDF',
-    'PDF conversion',
-    'web to PDF',
-    'PDF API',
-    'document conversion',
-    'HTML PDF converter',
-    'web page to PDF',
-    'PDF generation',
-    'document API',
-    'FileSlap'
-  ],
-  authors: [{ name: 'FileSlap Team' }],
-  creator: 'FileSlap',
-  publisher: 'FileSlap',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  metadataBase: new URL('https://fileslap.com'),
-  alternates: {
-    canonical: '/',
-  },
+  description: 'Instant HTML-to-PDF conversion API. Free 50 pages/month.',
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://fileslap.com',
+    title: 'FileSlap · HTML-to-PDF API for Developers',
+    description: 'Instant HTML-to-PDF conversion API. Free 50 pages/month.',
+    url: 'https://www.fileslap.com/',
     siteName: 'FileSlap',
-    title: 'FileSlap – HTML to PDF API | Convert Web Pages to PDF Instantly',
-    description: 'Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds. Free tier includes 50 pages/month.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-cover.png',
         width: 1200,
         height: 630,
-        alt: 'FileSlap - HTML to PDF Conversion API',
+        alt: 'FileSlap HTML-to-PDF API',
       },
     ],
+    type: 'website',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FileSlap – HTML to PDF API | Convert Web Pages to PDF Instantly',
-    description: 'Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds. Free tier includes 50 pages/month.',
-    images: ['/og-image.png'],
-    creator: '@fileslap',
+    title: 'FileSlap · HTML-to-PDF API for Developers',
+    description: 'Instant HTML-to-PDF conversion API. Free 50 pages/month.',
+    images: ['/og-cover.png'],
+    site: '@fileslap',
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
-    yahoo: 'your-yahoo-verification-code',
+  alternates: {
+    canonical: 'https://www.fileslap.com/',
   },
 };
 
@@ -164,7 +136,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${inter.className} min-h-screen flex flex-col bg-[#0D0D11] text-white antialiased font-inter leading-relaxed text-base`}
+        className={`${inter.variable} ${robotoMono.variable} min-h-screen flex flex-col bg-[#0D0D11] text-white antialiased leading-relaxed text-base`}
       >
         <header className="flex items-center justify-between px-6 py-4 bg-[#0D0D11]">
           <div></div>
@@ -172,7 +144,32 @@ export default function RootLayout({
             {/* TODO: add Docs | Pricing | GitHub later */}
           </nav>
         </header>
-        {children}
+        
+        <div className="flex-1">
+          {children}
+        </div>
+        
+        <footer className="border-t border-[#1DEE7F]/20 bg-[#0D0D11] px-6 py-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="text-sm text-white/60">
+                © 2024 FileSlap. All rights reserved.
+              </div>
+              
+              <nav className="flex gap-6 text-sm">
+                <Link href="/docs" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                  Documentation
+                </Link>
+                <Link href="/docs/security" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                  Security & Privacy
+                </Link>
+                <Link href="/contact" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                  Contact
+                </Link>
+              </nav>
+            </div>
+          </div>
+        </footer>
       </body>
     </html>
   );

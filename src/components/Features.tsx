@@ -36,7 +36,13 @@ export default function Features() {
             key={title}
             className="flex flex-col items-center rounded-2xl bg-[#111217] p-8 md:p-10 text-center border border-[#1DEE7F]/10 hover:border-[#1DEE7F]/30 transition-all duration-300 hover:shadow-xl"
           >
-            <div className="mb-6 text-6xl drop-shadow-lg">{icon}</div>
+            <div 
+              className="mb-6 text-6xl drop-shadow-lg"
+              aria-label={`${title} icon`}
+              role="img"
+            >
+              {icon}
+            </div>
             <h3 className="mb-4 text-xl font-semibold text-[#1DEE7F]">{title}</h3>
             <p className="text-base text-white/80 leading-relaxed">{blurb}</p>
           </div>

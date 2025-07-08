@@ -2,16 +2,36 @@
 
 import { useState, useEffect } from "react";
 
+// Spinner component
+function Spinner() {
+  return (
+    <div className="inline-flex items-center gap-2">
+      <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#0D0D11] border-t-[#1DEE7F]"></div>
+      <span>Converting…</span>
+    </div>
+  );
+}
+
 export default function HtmlToPdfDemo() {
   const [html, setHtml] = useState("<h1>Hello FileSlap</h1>");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Check remaining attempts on component mount
   useEffect(() => {
     checkRemainingAttempts();
   }, []);
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        window.URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const checkRemainingAttempts = async () => {
     try {
@@ -72,11 +92,7 @@ export default function HtmlToPdfDemo() {
       
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "fileslap-demo.pdf";
-      a.click();
-      window.URL.revokeObjectURL(url);
+      setPreviewUrl(url);
     } catch (e: unknown) {
       setError("Conversion failed. Please try again.");
       console.error(e);
@@ -135,7 +151,7 @@ export default function HtmlToPdfDemo() {
             disabled={loading || remainingAttempts === 0}
             className="rounded-full bg-[#1DEE7F] px-10 py-4 text-lg font-semibold text-[#0D0D11] hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed transition duration-200 shadow-lg hover:shadow-xl"
           >
-            {loading ? "Converting…" : remainingAttempts === 0 ? "Daily Limit Reached" : "Convert to PDF"}
+            {loading ? <Spinner /> : remainingAttempts === 0 ? "Daily Limit Reached" : "Convert to PDF"}
           </button>
           
           {remainingAttempts === 0 && (
@@ -144,6 +160,46 @@ export default function HtmlToPdfDemo() {
             </p>
           )}
         </div>
+
+        {previewUrl && (
+          <div className="mt-6">
+            <h3 className="text-xl font-bold text-white mb-4 text-center">PDF Generated Successfully!</h3>
+            <div className="w-full max-w-2xl mx-auto bg-[#111217] rounded-xl p-6 border border-[#1DEE7F]/20">
+              <div className="mb-4 text-center">
+                <p className="text-sm text-white/60 mb-3">Preview your generated PDF:</p>
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-64 rounded-lg border border-[#1DEE7F]/10"
+                  title="PDF Preview"
+                />
+              </div>
+              <div className="text-center">
+                <button
+                  onClick={() => {
+                    const a = document.createElement("a");
+                    a.href = previewUrl;
+                    a.download = "fileslap-demo.pdf";
+                    a.click();
+                  }}
+                  className="rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] hover:brightness-110 transition"
+                >
+                  Download PDF
+                </button>
+                <button
+                  onClick={() => {
+                    setPreviewUrl(null);
+                    if (previewUrl) {
+                      window.URL.revokeObjectURL(previewUrl);
+                    }
+                  }}
+                  className="ml-3 rounded-full border border-[#1DEE7F] px-6 py-3 font-medium text-white hover:bg-[#1DEE7F]/10 transition"
+                >
+                  Convert Another
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

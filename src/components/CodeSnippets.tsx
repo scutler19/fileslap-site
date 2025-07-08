@@ -114,9 +114,14 @@ export default function CodeSnippets() {
         <button
           onClick={copy}
           className="absolute top-4 right-4 px-3 py-1.5 bg-[#1DEE7F] text-[#0D0D11] text-xs font-medium rounded-md hover:brightness-110 transition"
+          aria-label={`Copy ${lang.toUpperCase()} code to clipboard`}
         >
           {copied ? "Copied!" : "Copy"}
         </button>
+        {/* Announce copy success to screen readers */}
+        <div aria-live="polite" className="sr-only">
+          {copied ? "Code copied to clipboard" : ""}
+        </div>
       </div>
     </section>
   );
