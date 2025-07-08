@@ -99,7 +99,7 @@ export default function HtmlToPdfDemo() {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111217] border border-[#1DEE7F]/30">
           <span className="text-sm text-white/60">Daily Demo:</span>
           <span className="text-sm font-semibold text-[#1DEE7F]">
-            {remainingAttempts !== null ? `${remainingAttempts}/3` : "3/3"} attempts remaining
+            {remainingAttempts !== null ? `${remainingAttempts}/3` : "3/3"} conversions remaining
           </span>
         </div>
       </div>
