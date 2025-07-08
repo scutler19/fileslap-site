@@ -187,7 +187,7 @@ export default function SubscribePage() {
           ) : (
             <div className="p-4 rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/20">
               <p className="text-sm text-white/80">
-                No API key found. We'll generate a new one for you during the subscription process.
+                No API key found. We&apos;ll generate a new one for you during the subscription process.
               </p>
             </div>
           )}
