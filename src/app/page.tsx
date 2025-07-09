@@ -111,6 +111,7 @@ export default function Home() {
         <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white mb-6 sm:mb-8">
           Convert&nbsp;
           <span className="text-[#1DEE7F]">HTML</span>
+          <br className="sm:hidden" />
           &nbsp;directly&nbsp;to&nbsp;PDF.
         </h1>
 
