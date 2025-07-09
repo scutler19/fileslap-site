@@ -161,6 +161,12 @@ export default function RootLayout({
               <Link href="/contact" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
                 Contact
               </Link>
+              <Link href="/terms" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                Terms
+              </Link>
+              <Link href="/privacy" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                Privacy
+              </Link>
             </nav>
           </div>
         </footer>
