@@ -135,10 +135,10 @@ const EXAMPLES = [
             <h1>Sarah Johnson</h1>
             <div class="title">Senior Software Engineer</div>
             <div class="contact">
-                <div>📧 sarah.johnson@email.com</div>
-                <div>📱 (555) 123-4567</div>
-                <div>📍 San Francisco, CA</div>
-                <div>🔗 linkedin.com/in/sarahjohnson</div>
+                <div>Email: sarah.johnson@email.com</div>
+                <div>Phone: (555) 123-4567</div>
+                <div>Location: San Francisco, CA</div>
+                <div>LinkedIn: linkedin.com/in/sarahjohnson</div>
             </div>
         </div>
         
@@ -336,28 +336,28 @@ const EXAMPLES = [
                     <td>$500K</td>
                     <td>$520K</td>
                     <td style="color: red;">-$20K</td>
-                    <td>⚠️ Over Budget</td>
+                    <td>⚠ Over Budget</td>
                 </tr>
                 <tr>
                     <td>Marketing</td>
                     <td>$300K</td>
                     <td>$285K</td>
                     <td style="color: green;">+$15K</td>
-                    <td>✅ Under Budget</td>
+                    <td>✓ Under Budget</td>
                 </tr>
                 <tr>
                     <td>Engineering</td>
                     <td>$400K</td>
                     <td>$395K</td>
                     <td style="color: green;">+$5K</td>
-                    <td>✅ Under Budget</td>
+                    <td>✓ Under Budget</td>
                 </tr>
                 <tr>
                     <td>Operations</td>
                     <td>$250K</td>
                     <td>$260K</td>
                     <td style="color: red;">-$10K</td>
-                    <td>⚠️ Over Budget</td>
+                    <td>⚠ Over Budget</td>
                 </tr>
             </tbody>
         </table>
