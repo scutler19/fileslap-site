@@ -26,8 +26,9 @@ export default function UseCases() {
       examples: ["Course certificates", "Training materials", "Student reports", "Educational handouts"],
       icon: (
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09v6L12 21l-7-3.82v-6L1 9l11-6z"/>
-          <path d="M12 12l7-3.82M12 12v9M12 12L5 8.18"/>
+          <path d="M12 14l9-4-9-4-9 4 9 4z"/>
+          <path d="M12 14l6.16-2.74c.34-.15.34-.56 0-.71L12 10l-6.16 2.74c-.34.15-.34.56 0 .71L12 14z"/>
+          <path d="M12 16l6.16-2.74c.34-.15.34-.56 0-.71L12 12l-6.16 2.74c-.34.15-.34.56 0 .71L12 16z"/>
         </svg>
       )
     },

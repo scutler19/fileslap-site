@@ -32,7 +32,11 @@ export default function SecurityPage() {
           
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-4xl mb-4">🔒</div>
+              <div className="text-4xl mb-4 text-[#1DEE7F]">
+                <svg className="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                </svg>
+              </div>
               <h3 className="text-lg font-semibold text-white mb-2">TLS-Only</h3>
               <p className="text-sm text-white/60">
                 All connections are encrypted with TLS 1.3. No data is transmitted over unsecured connections.
@@ -40,7 +44,11 @@ export default function SecurityPage() {
             </div>
             
             <div className="text-center">
-              <div className="text-4xl mb-4">💾</div>
+              <div className="text-4xl mb-4 text-[#1DEE7F]">
+                <svg className="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+                </svg>
+              </div>
               <h3 className="text-lg font-semibold text-white mb-2">In-Memory Processing</h3>
               <p className="text-sm text-white/60">
                 Your HTML payload is processed entirely in memory. No files are written to disk during conversion.
@@ -48,7 +56,11 @@ export default function SecurityPage() {
             </div>
             
             <div className="text-center">
-              <div className="text-4xl mb-4">⏰</div>
+              <div className="text-4xl mb-4 text-[#1DEE7F]">
+                <svg className="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
               <h3 className="text-lg font-semibold text-white mb-2">Auto-Purge</h3>
               <p className="text-sm text-white/60">
                 Generated PDFs are automatically purged from our servers after 1 hour. No long-term storage.
