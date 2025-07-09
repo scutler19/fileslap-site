@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FileSlap API",
+    "description": "Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "FileSlap Support",
+      "email": "ghost.exitcodezer0@proton.me",
+      "url": "https://fileslap.com/contact"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.fileslap.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/api/convert": {
+      "post": {
+        "summary": "Convert HTML to PDF",
+        "description": "Convert HTML content to a PDF file. The API returns the PDF directly as a binary response.",
+        "operationId": "convertHtmlToPdf",
+        "tags": ["Conversion"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConvertRequest"
+              },
+              "examples": {
+                "simple": {
+                  "summary": "Simple HTML",
+                  "value": {
+                    "html": "<h1>Hello World</h1><p>This is a simple PDF.</p>"
+                  }
+                },
+                "invoice": {
+                  "summary": "Invoice Template",
+                  "value": {
+                    "html": "<!DOCTYPE html><html><head><style>body{font-family:Arial,sans-serif;margin:40px;}table{width:100%;border-collapse:collapse;}th,td{padding:8px;text-align:left;border-bottom:1px solid #ddd;}</style></head><body><h1>Invoice</h1><table><tr><th>Item</th><th>Price</th></tr><tr><td>Service</td><td>$100</td></tr></table></body></html>"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PDF file generated successfully",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            },
+            "headers": {
+              "Content-Disposition": {
+                "description": "Filename for the downloaded PDF",
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename=\"converted.pdf\""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid HTML or missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "html is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid API key"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded or quota exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Rate limit exceeded. Please try again later."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Conversion service unavailable. Please try again later."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY",
+        "description": "Your FileSlap API key. Get one at https://fileslap.com/signup"
+      }
+    },
+    "schemas": {
+      "ConvertRequest": {
+        "type": "object",
+        "required": ["html"],
+        "properties": {
+          "html": {
+            "type": "string",
+            "description": "The HTML content to convert to PDF",
+            "minLength": 1,
+            "example": "<h1>Hello World</h1><p>This is a test document.</p>"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Conversion",
+      "description": "HTML to PDF conversion operations"
+    }
+  ]
+} 

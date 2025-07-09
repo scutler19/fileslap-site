@@ -160,6 +160,38 @@ window.URL.revokeObjectURL(url);`}
           Contact Support
         </Link>
       </div>
+
+      <div className="mt-12 p-6 rounded-lg bg-[#111217] border border-[#1DEE7F]/30">
+        <h3 className="mb-4 text-xl font-semibold text-[#1DEE7F]">Developer Tools</h3>
+        
+        <div className="space-y-4 text-sm text-white/80">
+          <div>
+            <strong className="text-white">OpenAPI Specification:</strong>
+            <div className="mt-2">
+              <a
+                href="/api/openapi.json"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#1DEE7F] hover:underline"
+              >
+                View OpenAPI Spec →
+              </a>
+            </div>
+          </div>
+          <div>
+            <strong className="text-white">Postman Collection:</strong>
+            <div className="mt-2">
+              <a
+                href="/api/fileslap-api.postman_collection.json"
+                download
+                className="text-[#1DEE7F] hover:underline"
+              >
+                Download Postman Collection →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
