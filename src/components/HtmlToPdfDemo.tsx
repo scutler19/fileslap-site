@@ -461,8 +461,8 @@ export default function HtmlToPdfDemo() {
   };
 
   return (
-    <section className="w-full max-w-5xl mx-auto mt-32 px-6">
-      <div className="text-center mb-12">
+    <section className="w-full max-w-5xl mx-auto mt-24 px-6">
+      <div className="text-center mb-16">
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
           Try It Now
         </h2>
@@ -485,7 +485,7 @@ export default function HtmlToPdfDemo() {
           <textarea
             value={html}
             onChange={(e) => setHtml(e.target.value)}
-            rows={10}
+            rows={12}
             className="w-full rounded-xl bg-[#111217] p-6 text-sm text-white/90 outline-none focus:ring-2 focus:ring-[#1DEE7F] border border-[#1DEE7F]/20 transition-all duration-200"
             placeholder="Paste your HTML here..."
           />

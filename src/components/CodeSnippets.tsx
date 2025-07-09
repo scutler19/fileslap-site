@@ -85,7 +85,7 @@ export default function CodeSnippets() {
 
   return (
     <section className="w-full max-w-4xl mx-auto mt-24 px-6">
-      <h2 className="mb-6 text-3xl font-semibold text-white">
+      <h2 className="mb-8 text-3xl sm:text-4xl font-bold text-white text-center">
         Copy-paste examples
       </h2>
 

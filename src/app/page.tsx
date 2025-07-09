@@ -92,9 +92,9 @@ export default function Home() {
         }}
       />
       
-      <main className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center px-6 py-16">
+      <main className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center px-6 py-20">
         {/* ── Hero ───────────────────────────────────────── */}
-        <section className="mb-8">
+        <section className="mb-12">
           <Image
             src="/assets/fileslap-logo.png"
             alt="FileSlap - HTML to PDF Conversion API"
@@ -105,13 +105,13 @@ export default function Home() {
           />
         </section>
         
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white mb-6">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white mb-8">
           Convert&nbsp;
           <span className="text-[#1DEE7F]">HTML</span>
           &nbsp;directly&nbsp;to&nbsp;PDF.
         </h1>
 
-        <p className="max-w-2xl text-lg sm:text-xl lg:text-2xl text-white/80 mb-10 leading-relaxed">
+        <p className="max-w-3xl text-lg sm:text-xl lg:text-2xl text-white/80 mb-12 leading-relaxed">
           One lightweight API that turns web pages&nbsp;→&nbsp;pixel-perfect PDFs&nbsp;
           in&nbsp;seconds. Your first&nbsp;50&nbsp;pages each month are&nbsp;free.
         </p>
@@ -134,10 +134,10 @@ export default function Home() {
           </a>
         </section>
       </main>
+      <Features />
       <UseCases />
       <HtmlToPdfDemo />
       <CodeSnippets />
-      <Features />
       <Pricing />
     </>
   );

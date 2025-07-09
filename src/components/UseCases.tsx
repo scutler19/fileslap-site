@@ -39,8 +39,8 @@ export default function UseCases() {
   ];
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 py-24">
-      <div className="text-center mb-16">
+    <section className="w-full max-w-6xl mx-auto px-6 py-20">
+      <div className="text-center mb-20">
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
           Who Uses HTML-to-PDF Conversion?
         </h2>
@@ -50,11 +50,11 @@ export default function UseCases() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
         {useCases.map((useCase, index) => (
           <div
             key={index}
-            className="bg-[#111217] rounded-xl p-6 border border-[#1DEE7F]/20 hover:border-[#1DEE7F]/40 transition-all duration-200 hover:shadow-lg hover:shadow-[#1DEE7F]/10"
+            className="bg-[#111217] rounded-xl p-8 border border-[#1DEE7F]/20 hover:border-[#1DEE7F]/40 transition-all duration-200 hover:shadow-lg hover:shadow-[#1DEE7F]/10"
           >
             <div className="text-4xl mb-4">{useCase.icon}</div>
             <h3 className="text-xl font-bold text-white mb-3">{useCase.title}</h3>
@@ -71,30 +71,7 @@ export default function UseCases() {
         ))}
       </div>
 
-      <div className="mt-16 text-center">
-        <div className="bg-gradient-to-r from-[#1DEE7F]/10 to-[#1DEE7F]/5 rounded-2xl p-8 border border-[#1DEE7F]/20">
-          <h3 className="text-2xl font-bold text-white mb-4">
-            Why Choose FileSlap for Your PDF Needs?
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div className="text-center">
-              <div className="text-3xl mb-3">⚡</div>
-              <h4 className="font-semibold text-white mb-2">Lightning Fast</h4>
-              <p className="text-sm text-white/70">Convert HTML to PDF in under 2 seconds with our optimized API</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl mb-3">🎯</div>
-              <h4 className="font-semibold text-white mb-2">Pixel Perfect</h4>
-              <p className="text-sm text-white/70">Maintain exact formatting, fonts, and styling from your HTML</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl mb-3">🔒</div>
-              <h4 className="font-semibold text-white mb-2">Secure & Reliable</h4>
-              <p className="text-sm text-white/70">TLS-only connections, in-memory processing, and 99.9% uptime</p>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </section>
   );
 } 

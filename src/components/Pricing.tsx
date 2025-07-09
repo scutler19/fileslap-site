@@ -60,8 +60,8 @@ export default function Pricing() {
   ];
 
   return (
-    <section id="pricing" className="w-full max-w-6xl mx-auto mt-32 px-6 pb-40">
-      <div className="text-center mb-16">
+    <section id="pricing" className="w-full max-w-6xl mx-auto mt-24 px-6 pb-32">
+      <div className="text-center mb-20">
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
           Simple, predictable pricing
         </h2>
@@ -74,7 +74,7 @@ export default function Pricing() {
         {plans.map((p) => (
           <div
             key={p.name}
-            className={`flex flex-col rounded-2xl p-8 md:p-10 text-center border transition-all duration-300 hover:shadow-xl ${
+            className={`flex flex-col rounded-2xl p-8 md:p-10 lg:p-12 text-center border transition-all duration-300 hover:shadow-xl ${
               p.highlighted
                 ? "border-[#1DEE7F] bg-[#0e1912] shadow-lg"
                 : "border-[#1DEE7F]/30 bg-[#111217] hover:border-[#1DEE7F]/50"

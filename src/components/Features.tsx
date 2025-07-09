@@ -20,8 +20,8 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="w-full max-w-5xl mx-auto mt-32 px-6">
-      <div className="text-center mb-16">
+    <section className="w-full max-w-5xl mx-auto mt-24 px-6">
+      <div className="text-center mb-20">
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
           Why developers choose FileSlap
         </h2>
@@ -30,11 +30,11 @@ export default function Features() {
         </p>
       </div>
 
-      <div className="grid gap-8 md:gap-12 md:grid-cols-3">
+      <div className="grid gap-8 md:gap-12 lg:gap-16 md:grid-cols-3">
         {features.map(({ icon, title, blurb }) => (
           <div
             key={title}
-            className="flex flex-col items-center rounded-2xl bg-[#111217] p-8 md:p-10 text-center border border-[#1DEE7F]/10 hover:border-[#1DEE7F]/30 transition-all duration-300 hover:shadow-xl"
+            className="flex flex-col items-center rounded-2xl bg-[#111217] p-8 md:p-10 lg:p-12 text-center border border-[#1DEE7F]/10 hover:border-[#1DEE7F]/30 transition-all duration-300 hover:shadow-xl"
           >
             <div 
               className="mb-6 text-6xl drop-shadow-lg"
