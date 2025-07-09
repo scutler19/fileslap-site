@@ -404,7 +404,7 @@ export default function HtmlToPdfDemo() {
         const data = await res.json();
         setRemainingAttempts(data.remainingAttempts);
       } else {
-        // If there's an error, assume 3 attempts remaining
+        // If there&apos;s an error, assume 3 attempts remaining
         setRemainingAttempts(3);
       }
     } catch {

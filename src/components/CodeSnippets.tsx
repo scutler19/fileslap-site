@@ -6,7 +6,7 @@ const snippets = {
   curl: `curl -X POST https://api.fileslap.com/api/convert \\
   -H "Content-Type: application/json" \\
   -H "X-API-KEY: YOUR_API_KEY" \\
-  -d '{"html": "<h1>Hello World</h1>"}' \\
+  -d &apos;{"html": "<h1>Hello World</h1>"}&apos; \\
   --output hello.pdf`,
   node: `import fetch from "node-fetch";
 import fs from "fs";

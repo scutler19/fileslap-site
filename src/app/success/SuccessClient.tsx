@@ -46,7 +46,7 @@ export default function SuccessClient() {
               onClick={copy}
               className="rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] transition hover:brightness-110"
             >
-              {copied ? 'Copied!' : 'Copy key'}
+              {copied ? "Copied!" : "Copy key"}
             </button>
 
             {/* Manage subscription link */}

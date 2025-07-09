@@ -46,7 +46,7 @@ export default function UseCases() {
         </h2>
         <p className="text-lg text-white/80 max-w-3xl mx-auto">
           From small businesses to enterprise applications, developers use FileSlap to automate document generation 
-          and create professional PDFs from web content. Here's how different industries benefit:
+          and create professional PDFs from web content. Here&apos;s how different industries benefit:
         </p>
       </div>
 

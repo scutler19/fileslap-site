@@ -77,7 +77,7 @@ export default function SignupForm() {
             onClick={copy}
             className="mt-6 w-full rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] transition hover:brightness-110"
           >
-            {copied ? 'Copied!' : 'Copy to clipboard'}
+            {copied ? "Copied!" : "Copy to clipboard"}
           </button>
 
           <p className="mt-4 text-sm text-white/60 text-center">
@@ -104,7 +104,7 @@ export default function SignupForm() {
             disabled={loading}
             className="w-full rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] transition hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Generating…' : 'Get my free API key'}
+            {loading ? "Generating…" : "Get my free API key"}
           </button>
 
           {error && <p className="text-center text-sm text-red-400">{error}</p>}
