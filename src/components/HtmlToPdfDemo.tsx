@@ -560,11 +560,20 @@ export default function HtmlToPdfDemo() {
             <div className="w-full max-w-2xl mx-auto bg-[#111217] rounded-xl p-4 sm:p-6 border border-[#1DEE7F]/20">
               <div className="mb-3 sm:mb-4 text-center">
                 <p className="text-xs sm:text-sm text-white/60 mb-2 sm:mb-3">Preview your generated PDF:</p>
-                <iframe
-                  src={previewUrl}
-                  className="w-full h-48 sm:h-64 rounded-lg border border-[#1DEE7F]/10"
-                  title="PDF Preview"
-                />
+                {/* Mobile-friendly PDF preview */}
+                <div className="relative">
+                  <iframe
+                    src={previewUrl}
+                    className="w-full h-48 sm:h-64 rounded-lg border border-[#1DEE7F]/10 hidden sm:block"
+                    title="PDF Preview"
+                  />
+                  {/* Mobile fallback */}
+                  <div className="sm:hidden bg-[#0D0D11] rounded-lg border border-[#1DEE7F]/10 p-6 text-center">
+                    <div className="text-4xl mb-3">📄</div>
+                    <p className="text-sm text-white/80 mb-4">PDF generated successfully!</p>
+                    <p className="text-xs text-white/60">Tap the download button below to view your PDF</p>
+                  </div>
+                </div>
               </div>
               <div className="text-center">
                 <button
