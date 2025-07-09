@@ -2,7 +2,7 @@
 
 export default function NewsletterSignup() {
   return (
-    <section className="w-full max-w-4xl mx-auto mt-24 px-6">
+    <section className="w-full max-w-4xl mx-auto mt-24 mb-24 px-6">
       <div className="rounded-2xl bg-[#111217] border border-[#1DEE7F]/20 p-8 md:p-12 text-center">
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
           Stay Updated
