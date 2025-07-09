@@ -3,6 +3,7 @@ import CodeSnippets from "@/components/CodeSnippets";
 import Features from "@/components/Features";
 import Pricing from "@/components/Pricing";
 import HtmlToPdfDemo from "@/components/HtmlToPdfDemo";
+import UseCases from "@/components/UseCases";
 import Image from "next/image";
 import { Metadata } from "next";
 
@@ -133,6 +134,7 @@ export default function Home() {
           </a>
         </section>
       </main>
+      <UseCases />
       <HtmlToPdfDemo />
       <CodeSnippets />
       <Features />
