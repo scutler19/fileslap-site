@@ -4,6 +4,8 @@ import Features from "@/components/Features";
 import Pricing from "@/components/Pricing";
 import HtmlToPdfDemo from "@/components/HtmlToPdfDemo";
 import UseCases from "@/components/UseCases";
+import FAQ from "@/components/FAQ";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import Image from "next/image";
 import { Metadata } from "next";
 
@@ -101,6 +103,7 @@ export default function Home() {
             width={520}
             height={130}
             priority
+            unoptimized
             className="mx-auto drop-shadow-lg"
           />
         </section>
@@ -139,6 +142,60 @@ export default function Home() {
       <HtmlToPdfDemo />
       <CodeSnippets />
       <Pricing />
+      <FAQ />
+      <NewsletterSignup />
+      {/* FAQPage Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is FileSlap?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "FileSlap is a fast, secure API for converting HTML to PDF. It is designed for developers who need reliable, scalable PDF generation in their apps."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How many free conversions do I get?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "You get 50 free pages per month with the Free plan. No credit card required."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is my HTML or PDF data stored?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. FileSlap processes all conversions in-memory and does not retain your HTML or generated PDFs."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How fast is the API?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Most conversions complete in under 2 seconds. Performance may vary based on HTML complexity."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I use FileSlap for invoices, reports, or resumes?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! FileSlap is perfect for generating invoices, reports, resumes, and any other web-based documents as PDFs."
+                }
+              }
+            ]
+          })
+        }}
+      />
     </>
   );
 }
