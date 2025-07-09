@@ -151,46 +151,17 @@ export default function RootLayout({
         
         <footer className="border-t border-[#1DEE7F]/20 bg-[#0D0D11] px-6 py-8">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-white/60">
-                <span>built by</span>
-                <a
-                  href="https://x.com/ExitCodeZer0"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block"
-                >
-                  <img
-                    src="/exitcodezer0_logo_512x512.png"
-                    alt="ExitCodeZer0 logo"
-                    width={32}
-                    height={32}
-                    className="rounded-full shadow-sm bg-[#0D0D11]"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </a>
-                <a
-                  href="https://x.com/ExitCodeZer0"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-white hover:text-[#1DEE7F] transition-colors"
-                >
-                  @ExitCodeZer0
-                </a>
-              </div>
-              
-              <nav className="flex gap-6 text-sm">
-                <Link href="/docs" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
-                  Documentation
-                </Link>
-                <Link href="/docs/security" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
-                  Security & Privacy
-                </Link>
-                <Link href="/contact" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
-                  Contact
-                </Link>
-              </nav>
-            </div>
+            <nav className="flex justify-center gap-6 text-sm">
+              <Link href="/docs" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                Documentation
+              </Link>
+              <Link href="/docs/security" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                Security & Privacy
+              </Link>
+              <Link href="/contact" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                Contact
+              </Link>
+            </nav>
           </div>
         </footer>
       </body>
