@@ -23,15 +23,15 @@ const faqs = [
 
 export default function FAQ() {
   return (
-    <section className="w-full max-w-4xl mx-auto mt-24 px-6" id="faq">
-      <h2 className="mb-8 text-3xl sm:text-4xl font-bold text-white text-center">
+    <section className="w-full max-w-4xl mx-auto mt-16 sm:mt-24 px-6" id="faq">
+      <h2 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center">
         Frequently Asked Questions
       </h2>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {faqs.map((faq, i) => (
-          <div key={i} className="rounded-xl bg-[#111217] border border-[#1DEE7F]/20 p-6">
-            <h3 className="text-lg font-semibold text-[#1DEE7F] mb-2">{faq.q}</h3>
-            <p className="text-white/80 text-base">{faq.a}</p>
+          <div key={i} className="rounded-xl bg-[#111217] border border-[#1DEE7F]/20 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-[#1DEE7F] mb-2">{faq.q}</h3>
+            <p className="text-sm sm:text-base text-white/80">{faq.a}</p>
           </div>
         ))}
       </div>

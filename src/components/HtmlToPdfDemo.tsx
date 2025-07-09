@@ -476,60 +476,60 @@ export default function HtmlToPdfDemo() {
   };
 
   return (
-    <section className="w-full max-w-5xl mx-auto mt-24 px-6">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+    <section className="w-full max-w-5xl mx-auto mt-16 sm:mt-24 px-6">
+      <div className="text-center mb-12 sm:mb-16">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
           Try It Now
         </h2>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto mb-6">
+        <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto mb-4 sm:mb-6">
           Test the API right now. Paste your HTML below and convert it to PDF instantly.
         </p>
         
         {/* Daily Usage Counter */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111217] border border-[#1DEE7F]/30">
-          <span className="text-sm text-white/60">Daily Demo:</span>
-          <span className="text-sm font-semibold text-[#1DEE7F]">
+        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-[#111217] border border-[#1DEE7F]/30">
+          <span className="text-xs sm:text-sm text-white/60">Daily Demo:</span>
+          <span className="text-xs sm:text-sm font-semibold text-[#1DEE7F]">
             {remainingAttempts !== null ? `${remainingAttempts}/3` : "3/3"} conversions remaining
           </span>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 items-start">
+      <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-start">
         {/* Textarea */}
         <div className="flex-1 w-full">
           <textarea
             value={html}
             onChange={(e) => setHtml(e.target.value)}
-            rows={12}
-            className="w-full rounded-xl bg-[#111217] p-6 text-sm text-white/90 outline-none focus:ring-2 focus:ring-[#1DEE7F] border border-[#1DEE7F]/20 transition-all duration-200"
+            rows={10}
+            className="w-full rounded-xl bg-[#111217] p-4 sm:p-6 text-sm text-white/90 outline-none focus:ring-2 focus:ring-[#1DEE7F] border border-[#1DEE7F]/20 transition-all duration-200"
             placeholder="Paste your HTML here..."
           />
         </div>
         {/* Example Tiles */}
-        <div className="w-full md:w-72 flex flex-col gap-4 mt-6 md:mt-0">
-          <div className="mb-2 text-white/70 text-sm font-medium text-center md:text-left">Need an example? Try one of these:</div>
+        <div className="w-full md:w-72 flex flex-col gap-3 sm:gap-4 mt-4 md:mt-0">
+          <div className="mb-2 text-white/70 text-xs sm:text-sm font-medium text-center md:text-left">Need an example? Try one of these:</div>
           {EXAMPLES.map((ex) => (
             <button
               key={ex.label}
               type="button"
               onClick={() => setHtml(ex.html)}
-              className="rounded-lg bg-[#111217] border border-[#1DEE7F]/30 hover:border-[#1DEE7F] shadow-sm px-4 py-3 text-left text-white transition-all duration-150 hover:bg-[#1DEE7F]/10 focus:outline-none focus:ring-2 focus:ring-[#1DEE7F]"
+              className="rounded-lg bg-[#111217] border border-[#1DEE7F]/30 hover:border-[#1DEE7F] shadow-sm px-3 sm:px-4 py-2 sm:py-3 text-left text-white transition-all duration-150 hover:bg-[#1DEE7F]/10 focus:outline-none focus:ring-2 focus:ring-[#1DEE7F]"
               aria-label={`Insert ${ex.label} HTML example`}
             >
-              <span className="font-semibold text-[#1DEE7F]">{ex.label}</span>
+              <span className="font-semibold text-[#1DEE7F] text-sm sm:text-base">{ex.label}</span>
             </button>
           ))}
         </div>
       </div>
 
       {error && (
-          <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-            <p className="text-sm text-red-400">{error}</p>
+          <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 mt-4 sm:mt-6">
+            <p className="text-xs sm:text-sm text-red-400">{error}</p>
             {error.includes("Daily demo limit reached") && (
-              <div className="mt-3">
+              <div className="mt-2 sm:mt-3">
                 <a
                   href="/signup"
-                  className="inline-flex items-center gap-2 text-sm text-[#1DEE7F] hover:underline"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#1DEE7F] hover:underline"
                 >
                   Get your free API key →
                 </a>
@@ -538,31 +538,31 @@ export default function HtmlToPdfDemo() {
           </div>
         )}
 
-        <div className="text-center">
+        <div className="text-center mt-6 sm:mt-8">
           <button
             onClick={convert}
             disabled={loading || remainingAttempts === 0}
-            className="rounded-full bg-[#1DEE7F] px-10 py-4 text-lg font-semibold text-[#0D0D11] hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed transition duration-200 shadow-lg hover:shadow-xl"
+            className="rounded-full bg-[#1DEE7F] px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-[#0D0D11] hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed transition duration-200 shadow-lg hover:shadow-xl"
           >
             {loading ? <Spinner /> : remainingAttempts === 0 ? "Daily Limit Reached" : "Convert to PDF"}
           </button>
           
           {remainingAttempts === 0 && (
-            <p className="mt-3 text-sm text-white/60">
+            <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-white/60">
               Get your own API key for more conversions
             </p>
           )}
         </div>
 
         {previewUrl && (
-          <div className="mt-6">
-            <h3 className="text-xl font-bold text-white mb-4 text-center">PDF Generated Successfully!</h3>
-            <div className="w-full max-w-2xl mx-auto bg-[#111217] rounded-xl p-6 border border-[#1DEE7F]/20">
-              <div className="mb-4 text-center">
-                <p className="text-sm text-white/60 mb-3">Preview your generated PDF:</p>
+          <div className="mt-6 sm:mt-8">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 text-center">PDF Generated Successfully!</h3>
+            <div className="w-full max-w-2xl mx-auto bg-[#111217] rounded-xl p-4 sm:p-6 border border-[#1DEE7F]/20">
+              <div className="mb-3 sm:mb-4 text-center">
+                <p className="text-xs sm:text-sm text-white/60 mb-2 sm:mb-3">Preview your generated PDF:</p>
                 <iframe
                   src={previewUrl}
-                  className="w-full h-64 rounded-lg border border-[#1DEE7F]/10"
+                  className="w-full h-48 sm:h-64 rounded-lg border border-[#1DEE7F]/10"
                   title="PDF Preview"
                 />
               </div>
@@ -574,7 +574,7 @@ export default function HtmlToPdfDemo() {
                     a.download = "fileslap-demo.pdf";
                     a.click();
                   }}
-                  className="rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] hover:brightness-110 transition"
+                  className="rounded-full bg-[#1DEE7F] px-4 sm:px-6 py-2 sm:py-3 font-medium text-[#0D0D11] hover:brightness-110 transition text-sm sm:text-base"
                 >
                   Download PDF
                 </button>
@@ -585,7 +585,7 @@ export default function HtmlToPdfDemo() {
                       window.URL.revokeObjectURL(previewUrl);
                     }
                   }}
-                  className="ml-3 rounded-full border border-[#1DEE7F] px-6 py-3 font-medium text-white hover:bg-[#1DEE7F]/10 transition"
+                  className="ml-2 sm:ml-3 rounded-full border border-[#1DEE7F] px-4 sm:px-6 py-2 sm:py-3 font-medium text-white hover:bg-[#1DEE7F]/10 transition text-sm sm:text-base"
                 >
                   Convert Another
                 </button>

@@ -94,9 +94,9 @@ export default function Home() {
         }}
       />
       
-      <main className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center px-6 py-20">
+      <main className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center px-6 py-12 sm:py-20">
         {/* ── Hero ───────────────────────────────────────── */}
-        <section className="mb-12">
+        <section className="mb-8 sm:mb-12">
           <Image
             src="/assets/fileslap-logo.png"
             alt="FileSlap - HTML to PDF Conversion API"
@@ -104,33 +104,33 @@ export default function Home() {
             height={130}
             priority
             unoptimized
-            className="mx-auto drop-shadow-lg"
+            className="mx-auto drop-shadow-lg w-64 sm:w-auto"
           />
         </section>
         
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white mb-8">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white mb-6 sm:mb-8">
           Convert&nbsp;
           <span className="text-[#1DEE7F]">HTML</span>
           &nbsp;directly&nbsp;to&nbsp;PDF.
         </h1>
 
-        <p className="max-w-3xl text-lg sm:text-xl lg:text-2xl text-white/80 mb-12 leading-relaxed">
+        <p className="max-w-3xl text-base sm:text-lg lg:text-xl xl:text-2xl text-white/80 mb-8 sm:mb-12 leading-relaxed">
           One lightweight API that turns web pages&nbsp;→&nbsp;pixel-perfect PDFs&nbsp;
           in&nbsp;seconds. Your first&nbsp;50&nbsp;pages each month are&nbsp;free.
         </p>
 
         {/* ── Call-to-Action Buttons ───────────────────── */}
-        <section className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+        <section className="flex flex-col sm:flex-row gap-3 sm:gap-6">
           <a
             href="/signup"
-            className="rounded-full bg-[#1DEE7F] px-10 py-4 text-lg font-semibold text-[#0D0D11] hover:brightness-110 transition duration-200 shadow-lg hover:shadow-xl"
+            className="rounded-full bg-[#1DEE7F] px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-[#0D0D11] hover:brightness-110 transition duration-200 shadow-lg hover:shadow-xl"
             aria-label="Get your free API key"
           >
             Get API Key
           </a>
           <a
             href="/docs"
-            className="rounded-full border-2 border-[#1DEE7F] px-10 py-4 text-lg font-semibold text-white hover:bg-[#1DEE7F]/10 transition duration-200"
+            className="rounded-full border-2 border-[#1DEE7F] px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white hover:bg-[#1DEE7F]/10 transition duration-200"
             aria-label="Read the API documentation"
           >
             Read Docs
