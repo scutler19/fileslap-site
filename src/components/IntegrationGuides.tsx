@@ -81,7 +81,7 @@ export default function IntegrationGuides() {
           </h2>
           <p className="max-w-3xl mx-auto text-lg sm:text-xl text-white/80 leading-relaxed">
             Step-by-step guides for every major platform. From Node.js to no-code tools, 
-            we've got you covered with production-ready code examples.
+            we&apos;ve got you covered with production-ready code examples.
           </p>
         </div>
 
