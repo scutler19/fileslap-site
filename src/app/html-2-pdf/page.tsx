@@ -20,7 +20,7 @@ export default function Html2PdfLanding() {
         "name": "How do I convert HTML to PDF using FileSlap?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "You can use FileSlap's API to convert HTML to PDF with a simple POST request. See the code sample below or visit our documentation for more details."
+          "text": "You can use FileSlap&apos;s API to convert HTML to PDF with a simple POST request. See the code sample below or visit our documentation for more details."
         }
       },
       {
@@ -87,7 +87,7 @@ export default function Html2PdfLanding() {
           </div>
           <div>
             <strong>How do I convert HTML to PDF using FileSlap?</strong>
-            <p className="text-white/80">You can use FileSlap's API to convert HTML to PDF with a simple POST request. See the code sample above or <Link href="/docs" className="text-[#1DEE7F] underline">read our documentation</Link> for more details.</p>
+            <p className="text-white/80">You can use FileSlap&apos;s API to convert HTML to PDF with a simple POST request. See the code sample above or <Link href="/docs" className="text-[#1DEE7F] underline">read our documentation</Link> for more details.</p>
           </div>
           <div>
             <strong>Is FileSlap suitable for invoices, reports, and dynamic documents?</strong>
