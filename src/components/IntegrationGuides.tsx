@@ -112,11 +112,12 @@ export default function IntegrationGuides() {
                 <div className="w-full aspect-[1200/630] rounded-t-2xl overflow-hidden bg-white/10 flex-shrink-0">
                   <Image
                     src={guide.thumbnail}
-                    alt={`${guide.title} thumbnail`}
+                    alt={`FileSlap ${guide.title} integration banner`}
                     width={1200}
                     height={630}
                     className="object-cover w-full h-full"
                     priority={index === 0}
+                    quality={80}
                   />
                 </div>
                 {/* Content */}
