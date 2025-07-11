@@ -6,8 +6,10 @@ import HtmlToPdfDemo from "@/components/HtmlToPdfDemo";
 import UseCases from "@/components/UseCases";
 import FAQ from "@/components/FAQ";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import IntegrationGuides from "@/components/IntegrationGuides";
 import Image from "next/image";
 import { Metadata } from "next";
+import Head from 'next/head';
 
 export const metadata: Metadata = {
   title: 'HTML to PDF API | Convert Web Pages to PDF Instantly',
@@ -54,47 +56,52 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      {/* Structured Data for Home Page */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "FileSlap",
-            "url": "https://fileslap.com",
-            "description": "Convert HTML to PDF with our lightning-fast API",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": "https://fileslap.com/docs",
-              "query-input": "required name=search_term_string"
-            }
-          })
-        }}
-      />
-      
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "PriceSpecification",
-            "name": "FileSlap Pricing",
-            "description": "HTML to PDF conversion pricing",
-            "price": "0",
-            "priceCurrency": "USD",
-            "validFrom": "2024-01-01",
-            "valueAddedTaxIncluded": false,
-            "eligibleTransactionVolume": {
+      <Head>
+        {/* Structured Data for Home Page */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "FileSlap",
+              "url": "https://fileslap.com",
+              "description": "Convert HTML to PDF with our lightning-fast API",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://fileslap.com/docs",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
               "@type": "PriceSpecification",
+              "name": "FileSlap Pricing",
+              "description": "HTML to PDF conversion pricing",
               "price": "0",
-              "priceCurrency": "USD"
-            }
-          })
-        }}
-      />
+              "priceCurrency": "USD",
+              "validFrom": "2024-01-01",
+              "valueAddedTaxIncluded": false,
+              "eligibleTransactionVolume": {
+                "@type": "PriceSpecification",
+                "price": "0",
+                "priceCurrency": "USD"
+              }
+            })
+          }}
+        />
+        
+        <link rel="preload" as="image" href="/assets/fileslap-logo.png" />
+        <link rel="preload" as="font" href="/fonts/inter-latin-variable-wghtOnly-normal.woff2" type="font/woff2" crossOrigin="anonymous" />
+      </Head>
       
-      <main className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center px-6 py-12 sm:py-20">
+      <main id="main-content" className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center px-6 py-12 sm:py-20">
         {/* ── Hero ───────────────────────────────────────── */}
         <section className="mb-8 sm:mb-12">
           <Image
@@ -136,8 +143,17 @@ export default function Home() {
           >
             Read Docs
           </a>
-        </section>
-      </main>
+      </section>
+    </main>
+      {/* Sticky Get API Key button for mobile */}
+      <a
+        href="/signup"
+        className="fixed bottom-4 right-4 z-40 sm:hidden rounded-full bg-[#1DEE7F] px-6 py-4 font-semibold text-[#0D0D11] shadow-lg hover:brightness-110 transition text-base"
+        style={{ boxShadow: '0 4px 24px 0 #1DEE7F33' }}
+        aria-label="Get your free API key"
+      >
+        Get API Key
+      </a>
       <Features />
       <UseCases />
       <HtmlToPdfDemo />
@@ -145,6 +161,7 @@ export default function Home() {
       <Pricing />
       <FAQ />
       <NewsletterSignup />
+      <IntegrationGuides />
       {/* FAQPage Schema for SEO */}
       <script
         type="application/ld+json"

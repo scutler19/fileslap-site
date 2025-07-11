@@ -1,5 +1,6 @@
 /* src/app/docs/page.tsx */
 import Link from 'next/link';
+import IntegrationGuides from '@/components/IntegrationGuides';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -192,6 +193,8 @@ window.URL.revokeObjectURL(url);`}
           </div>
         </div>
       </div>
+      
+      <IntegrationGuides />
     </main>
   );
 }

@@ -1,0 +1,545 @@
+# Convert HTML to PDF with Google Apps Script and FileSlap API
+
+*Automate PDF generation in Google Workspace using Apps Script and our powerful cloud-based API*
+
+---
+
+## Why Convert HTML to PDF with Google Apps Script?
+
+Google Apps Script users need automated PDF generation for:
+- **Google Sheets reports** - Convert spreadsheet data to professional PDFs
+- **Google Forms responses** - Generate PDF summaries of form submissions
+- **Gmail automation** - Create PDFs from email content and send as attachments
+- **Google Docs integration** - Convert documents to PDFs for distribution
+- **Drive automation** - Generate PDFs and save them to Google Drive
+
+While Google Apps Script has some basic PDF capabilities, they're limited in functionality and customization. The FileSlap API integration gives you unlimited flexibility to create professional, branded PDFs from any HTML content with advanced formatting and styling.
+
+---
+
+## Setting Up Your FileSlap API Integration
+
+### 1. Get Your API Key
+
+First, sign up at [fileslap.com](https://fileslap.com) and grab your API key from the dashboard. It's free to start with 50 conversions per month.
+
+### 2. Configure Apps Script
+
+Google Apps Script has built-in HTTP request capabilities, making it perfect for integrating with the FileSlap API.
+
+---
+
+## Basic HTML to PDF Conversion
+
+Here's the simplest way to convert HTML to PDF in Google Apps Script:
+
+```javascript
+function convertHtmlToPdf(htmlContent, apiKey) {
+  const url = 'https://api.fileslap.com/api/convert';
+  
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': apiKey
+    },
+    payload: JSON.stringify({
+      html: htmlContent
+    })
+  };
+  
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    
+    if (response.getResponseCode() === 200) {
+      // Get the PDF as a blob
+      const pdfBlob = response.getBlob();
+      
+      // Save to Google Drive
+      const file = DriveApp.createFile(pdfBlob);
+      file.setName('generated.pdf');
+      
+      Logger.log('PDF created successfully: ' + file.getUrl());
+      return file;
+    } else {
+      Logger.log('Error: ' + response.getResponseCode());
+      Logger.log('Response: ' + response.getContentText());
+      return null;
+    }
+  } catch (error) {
+    Logger.log('Request failed: ' + error.toString());
+    return null;
+  }
+}
+
+// Example usage
+function testPdfConversion() {
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Sample Document</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            h1 { color: #333; }
+        </style>
+    </head>
+    <body>
+        <h1>Hello from Google Apps Script!</h1>
+        <p>This HTML was converted to PDF using the FileSlap API.</p>
+    </body>
+    </html>
+  `;
+  
+  const apiKey = 'YOUR_API_KEY';
+  const pdfFile = convertHtmlToPdf(htmlContent, apiKey);
+  
+  if (pdfFile) {
+    Logger.log('PDF saved to Drive: ' + pdfFile.getUrl());
+  }
+}
+```
+
+---
+
+## Real-World Google Apps Script Examples
+
+### 1. Google Sheets to PDF Report
+
+Convert spreadsheet data to a professional PDF report:
+
+```javascript
+function generateSheetReport() {
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const data = sheet.getDataRange().getValues();
+  
+  // Create HTML table from sheet data
+  let tableHtml = '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">';
+  
+  // Add header row
+  tableHtml += '<thead><tr>';
+  data[0].forEach(header => {
+    tableHtml += `<th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">${header}</th>`;
+  });
+  tableHtml += '</tr></thead>';
+  
+  // Add data rows
+  tableHtml += '<tbody>';
+  for (let i = 1; i < data.length; i++) {
+    tableHtml += '<tr>';
+    data[i].forEach(cell => {
+      tableHtml += `<td style="border: 1px solid #ddd; padding: 8px;">${cell}</td>`;
+    });
+    tableHtml += '</tr>';
+  }
+  tableHtml += '</tbody></table>';
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>${sheet.getName()} Report</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            h1 { color: #333; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>${sheet.getName()} Report</h1>
+            <p>Generated on ${new Date().toLocaleDateString()}</p>
+        </div>
+        ${tableHtml}
+    </body>
+    </html>
+  `;
+  
+  const apiKey = PropertiesService.getScriptProperties().getProperty('FILESLAP_API_KEY');
+  const pdfFile = convertHtmlToPdf(htmlContent, apiKey);
+  
+  if (pdfFile) {
+    pdfFile.setName(`${sheet.getName()}_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+    Logger.log('Report generated: ' + pdfFile.getUrl());
+  }
+}
+```
+
+### 2. Google Forms Response to PDF
+
+Generate PDFs from form submissions:
+
+```javascript
+function onFormSubmit(e) {
+  const formResponse = e.response;
+  const itemResponses = formResponse.getItemResponses();
+  
+  // Build HTML from form responses
+  let formHtml = '<div style="font-family: Arial, sans-serif; margin: 40px;">';
+  formHtml += '<h1>Form Submission Report</h1>';
+  formHtml += '<p><strong>Submitted:</strong> ' + formResponse.getTimestamp() + '</p>';
+  
+  itemResponses.forEach(itemResponse => {
+    const question = itemResponse.getItem().getTitle();
+    const answer = itemResponse.getResponse();
+    
+    formHtml += `
+      <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+        <h3 style="margin: 0 0 10px 0; color: #333;">${question}</h3>
+        <p style="margin: 0; color: #666;">${answer}</p>
+      </div>
+    `;
+  });
+  
+  formHtml += '</div>';
+  
+  const fullHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Form Submission</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        ${formHtml}
+    </body>
+    </html>
+  `;
+  
+  const apiKey = PropertiesService.getScriptProperties().getProperty('FILESLAP_API_KEY');
+  const pdfFile = convertHtmlToPdf(fullHtml, apiKey);
+  
+  if (pdfFile) {
+    pdfFile.setName(`Form_Submission_${formResponse.getTimestamp().toISOString().split('T')[0]}.pdf`);
+    
+    // Email the PDF to admin
+    const adminEmail = 'admin@yourcompany.com';
+    GmailApp.sendEmail(adminEmail, 'New Form Submission PDF', 
+      'A new form submission has been converted to PDF and attached.', {
+        attachments: [pdfFile.getBlob()],
+        name: 'Form Submission System'
+      });
+  }
+}
+```
+
+### 3. Gmail to PDF Archive
+
+Convert emails to PDFs and save to Drive:
+
+```javascript
+function archiveEmailsToPdf() {
+  const threads = GmailApp.search('label:important', 0, 10); // Get last 10 important emails
+  
+  threads.forEach(thread => {
+    const messages = thread.getMessages();
+    
+    messages.forEach(message => {
+      const subject = message.getSubject();
+      const body = message.getPlainBody();
+      const date = message.getDate();
+      
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${subject}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+                .email-body { white-space: pre-wrap; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>${subject}</h1>
+                <p><strong>From:</strong> ${message.getFrom()}</p>
+                <p><strong>Date:</strong> ${date.toLocaleString()}</p>
+            </div>
+            <div class="email-body">${body}</div>
+        </body>
+        </html>
+      `;
+      
+      const apiKey = PropertiesService.getScriptProperties().getProperty('FILESLAP_API_KEY');
+      const pdfFile = convertHtmlToPdf(htmlContent, apiKey);
+      
+      if (pdfFile) {
+        const safeSubject = subject.replace(/[^a-z0-9]/gi, '_');
+        pdfFile.setName(`Email_${safeSubject}_${date.toISOString().split('T')[0]}.pdf`);
+        
+        // Move to archive folder
+        const archiveFolder = DriveApp.getFolderById('YOUR_ARCHIVE_FOLDER_ID');
+        archiveFolder.addFile(pdfFile);
+        DriveApp.getRootFolder().removeFile(pdfFile);
+      }
+    });
+  });
+}
+```
+
+---
+
+## Advanced Google Apps Script Configurations
+
+### Error Handling and Retries
+
+```javascript
+function convertWithRetry(htmlContent, apiKey, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = convertHtmlToPdf(htmlContent, apiKey);
+      
+      if (result) {
+        return result;
+      }
+      
+      // Wait before retry
+      if (attempt < maxRetries) {
+        Utilities.sleep(2000 * attempt); // Exponential backoff
+      }
+      
+    } catch (error) {
+      Logger.log(`Attempt ${attempt} failed: ${error.toString()}`);
+      
+      if (attempt === maxRetries) {
+        throw error;
+      }
+    }
+  }
+  
+  return null;
+}
+```
+
+### Batch Processing
+
+```javascript
+function batchConvertToPdf(htmlTemplates) {
+  const results = [];
+  
+  htmlTemplates.forEach((template, index) => {
+    try {
+      const apiKey = PropertiesService.getScriptProperties().getProperty('FILESLAP_API_KEY');
+      const pdfFile = convertHtmlToPdf(template.html, apiKey);
+      
+      if (pdfFile) {
+        pdfFile.setName(template.filename || `document_${index + 1}.pdf`);
+        results.push({
+          success: true,
+          file: pdfFile,
+          index: index
+        });
+      } else {
+        results.push({
+          success: false,
+          error: 'PDF generation failed',
+          index: index
+        });
+      }
+      
+      // Add delay between requests to avoid rate limiting
+      Utilities.sleep(1000);
+      
+    } catch (error) {
+      results.push({
+        success: false,
+        error: error.toString(),
+        index: index
+      });
+    }
+  });
+  
+  return results;
+}
+```
+
+### Template Engine
+
+```javascript
+function generateInvoicePdf(orderData) {
+  const template = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Invoice #{{orderNumber}}</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; }
+            .invoice-details { margin: 30px 0; }
+            .items-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            .total { font-weight: bold; font-size: 18px; text-align: right; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>INVOICE</h1>
+            <p>Order #{{orderNumber}} | Date: {{orderDate}}</p>
+        </div>
+        
+        <div class="invoice-details">
+            <h3>Bill To:</h3>
+            <p>{{customerName}}<br>
+            {{customerEmail}}<br>
+            {{customerAddress}}</p>
+        </div>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{quantity}}</td>
+                    <td>${{price}}</td>
+                    <td>${{total}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        
+        <div class="total">
+            <p>Total: ${{total}}</p>
+        </div>
+    </body>
+    </html>
+  `;
+  
+  // Simple template replacement
+  let html = template;
+  html = html.replace(/{{orderNumber}}/g, orderData.orderNumber);
+  html = html.replace(/{{orderDate}}/g, orderData.orderDate);
+  html = html.replace(/{{customerName}}/g, orderData.customerName);
+  html = html.replace(/{{customerEmail}}/g, orderData.customerEmail);
+  html = html.replace(/{{customerAddress}}/g, orderData.customerAddress);
+  html = html.replace(/{{total}}/g, orderData.total);
+  
+  // Replace items
+  const itemsHtml = orderData.items.map(item => 
+    `<tr><td>${item.name}</td><td>${item.quantity}</td><td>$${item.price}</td><td>$${item.quantity * item.price}</td></tr>`
+  ).join('');
+  
+  html = html.replace(/{{#each items}}[\s\S]*?{{\/each}}/, itemsHtml);
+  
+  const apiKey = PropertiesService.getScriptProperties().getProperty('FILESLAP_API_KEY');
+  return convertHtmlToPdf(html, apiKey);
+}
+```
+
+---
+
+## Setting Up API Key Security
+
+Store your API key securely using Apps Script Properties:
+
+```javascript
+// Set the API key (run this once)
+function setupApiKey() {
+  PropertiesService.getScriptProperties().setProperty('FILESLAP_API_KEY', 'your_api_key_here');
+}
+
+// Get the API key in your functions
+function getApiKey() {
+  return PropertiesService.getScriptProperties().getProperty('FILESLAP_API_KEY');
+}
+```
+
+---
+
+## Popular Google Apps Script + FileSlap Use Cases
+
+### Google Workspace Automation
+- **Sheets Reports**: Convert spreadsheet data to PDF reports
+- **Forms Processing**: Generate PDF summaries of form responses
+- **Gmail Archiving**: Convert important emails to PDFs
+- **Docs Integration**: Convert Google Docs to PDFs
+- **Drive Organization**: Automatically organize PDFs in Drive
+
+### Business Workflows
+- **Invoice Generation**: Create PDF invoices from order data
+- **Report Distribution**: Email PDF reports to stakeholders
+- **Document Archiving**: Convert documents to PDFs for long-term storage
+- **Data Export**: Export Google Sheets data as formatted PDFs
+
+---
+
+## Performance Tips
+
+### 1. Batch Processing
+- Process multiple documents in batches
+- Add delays between requests to avoid rate limiting
+- Use try-catch blocks for error handling
+
+### 2. Caching
+- Cache frequently used templates
+- Store generated PDFs in Drive for reuse
+- Use Apps Script Properties for configuration
+
+### 3. Error Handling
+- Implement retry logic for failed requests
+- Log errors for debugging
+- Send notifications for critical failures
+
+---
+
+## Troubleshooting Common Issues
+
+### HTTP Request Errors
+**Problem**: API requests failing
+**Solution**: Check API key, network connectivity, and request format
+
+### Rate Limiting
+**Problem**: Too many requests
+**Solution**: Add delays between requests and implement exponential backoff
+
+### Large HTML Content
+**Problem**: Timeout errors with large documents
+**Solution**: Break large documents into smaller chunks
+
+---
+
+## Pricing and Scaling
+
+- **Free Tier**: 50 conversions per month (perfect for testing)
+- **Pro Plan**: $19/month for 10,000 conversions
+- **Enterprise**: Custom pricing for high-volume automation
+
+Most Google Apps Script automations use 1-20 conversions per day, making the free tier perfect for getting started.
+
+---
+
+## Get Started Today
+
+Ready to automate PDF generation in Google Workspace?
+
+1. **Sign up** at [fileslap.com](https://fileslap.com)
+2. **Get your API key** from the dashboard
+3. **Open Google Apps Script** and create a new project
+4. **Copy the code examples** above and customize for your needs
+5. **Test with a simple conversion** before building complex workflows
+
+No external dependencies required - just Google Apps Script and the FileSlap API.
+
+---
+
+## Need Help?
+
+- **Documentation**: [fileslap.com/docs](https://fileslap.com/docs)
+- **Google Apps Script Documentation**: [developers.google.com/apps-script](https://developers.google.com/apps-script)
+- **Support**: Reach out to our team for custom integration help
+
+---
+
+*Transform your Google Workspace workflows with automated PDF generation using Apps Script and FileSlap.*
+
+---
+
+**Tags**: #GoogleAppsScript #PDF #API #GoogleWorkspace #Automation #FileSlap #GSuite 

@@ -1,0 +1,726 @@
+# Convert HTML to PDF with React: A Complete Guide to Using the FileSlap API
+
+*Transform your React components into professional PDFs using our lightning-fast browser-based API*
+
+---
+
+## Why Convert HTML to PDF with React?
+
+React developers often need to generate PDFs from their components for:
+- **User-generated reports** - Let users download their data as PDFs
+- **Invoice generation** - Create downloadable invoices from order data
+- **Document sharing** - Convert React components to shareable PDFs
+- **Content archiving** - Save important pages as PDFs
+- **Print-friendly versions** - Generate printable formats of web content
+
+While there are client-side PDF libraries like `jsPDF` or `html2pdf.js`, they often struggle with complex layouts, CSS styling, and cross-browser compatibility. The FileSlap API provides a reliable, cloud-based solution that handles all the rendering complexity for you.
+
+---
+
+## Getting Started with FileSlap API
+
+### 1. Get Your API Key
+
+First, sign up at [fileslap.com](https://fileslap.com) and grab your API key from the dashboard. It's free to start with 50 conversions per month.
+
+### 2. No Dependencies Required
+
+Unlike other PDF solutions, you don't need to install any additional packages. The FileSlap API works directly with the browser's built-in `fetch` API.
+
+---
+
+## Basic HTML to PDF Conversion
+
+Here's the simplest way to convert HTML to PDF in React:
+
+```javascript
+import React, { useState } from 'react';
+
+function PdfConverter() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const convertToPdf = async (htmlContent) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('https://api.fileslap.com/api/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': 'YOUR_API_KEY'
+        },
+        body: JSON.stringify({ html: htmlContent })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      // Get the PDF as a blob
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'generated.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sampleHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Sample Document</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            h1 { color: #333; }
+        </style>
+    </head>
+    <body>
+        <h1>Hello from React!</h1>
+        <p>This HTML was converted to PDF using the FileSlap API.</p>
+    </body>
+    </html>
+  `;
+
+  return (
+    <div>
+      <button 
+        onClick={() => convertToPdf(sampleHtml)}
+        disabled={loading}
+      >
+        {loading ? 'Converting...' : 'Convert to PDF'}
+      </button>
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+    </div>
+  );
+}
+
+export default PdfConverter;
+```
+
+---
+
+## Converting React Components to PDF
+
+### Method 1: Using ReactDOMServer
+
+Convert your React components to HTML strings:
+
+```javascript
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+
+function InvoiceComponent({ orderData }) {
+  return (
+    <div style={{ fontFamily: 'Arial, sans-serif', margin: '40px' }}>
+      <div style={{ textAlign: 'center', borderBottom: '2px solid #333', paddingBottom: '20px' }}>
+        <h1>INVOICE</h1>
+        <p>Order #{orderData.orderNumber} | Date: {orderData.orderDate}</p>
+      </div>
+      
+      <div style={{ margin: '30px 0' }}>
+        <h3>Bill To:</h3>
+        <p>{orderData.customerName}<br />
+        {orderData.customerEmail}<br />
+        {orderData.customerAddress}</p>
+      </div>
+      
+      <table style={{ width: '100%', borderCollapse: 'collapse', margin: '20px 0' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Item</th>
+            <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Quantity</th>
+            <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Price</th>
+            <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orderData.items.map((item, index) => (
+            <tr key={index}>
+              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{item.name}</td>
+              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{item.quantity}</td>
+              <td style={{ border: '1px solid #ddd', padding: '8px' }}>${item.price}</td>
+              <td style={{ border: '1px solid #ddd', padding: '8px' }}>${item.quantity * item.price}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'right' }}>
+        <p>Total: ${orderData.total}</p>
+      </div>
+    </div>
+  );
+}
+
+function InvoiceGenerator() {
+  const [loading, setLoading] = useState(false);
+
+  const generateInvoice = async () => {
+    setLoading(true);
+
+    const orderData = {
+      orderNumber: 'ORD-12345',
+      orderDate: new Date().toLocaleDateString(),
+      customerName: 'John Doe',
+      customerEmail: 'john@example.com',
+      customerAddress: '123 Main St, City, State 12345',
+      items: [
+        { name: 'Web Development', quantity: 1, price: 1500 },
+        { name: 'Hosting Setup', quantity: 1, price: 200 }
+      ],
+      total: 1700
+    };
+
+    // Convert React component to HTML
+    const htmlContent = ReactDOMServer.renderToString(
+      <InvoiceComponent orderData={orderData} />
+    );
+
+    // Wrap in complete HTML document
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Invoice #${orderData.orderNumber}</title>
+        <meta charset="utf-8">
+      </head>
+      <body>
+        ${htmlContent}
+      </body>
+      </html>
+    `;
+
+    try {
+      const response = await fetch('https://api.fileslap.com/api/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': 'YOUR_API_KEY'
+        },
+        body: JSON.stringify({ html: fullHtml })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `invoice-${orderData.orderNumber}.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={generateInvoice} disabled={loading}>
+        {loading ? 'Generating Invoice...' : 'Generate Invoice PDF'}
+      </button>
+    </div>
+  );
+}
+```
+
+### Method 2: Using HTML Templates
+
+For more complex layouts, use HTML templates with React data:
+
+```javascript
+function ReportGenerator({ data }) {
+  const [loading, setLoading] = useState(false);
+
+  const generateReport = async () => {
+    setLoading(true);
+
+    // Create chart HTML
+    const chartHtml = data.map(item => {
+      const percentage = (item.value / Math.max(...data.map(d => d.value))) * 100;
+      return `
+        <div style="margin: 10px 0;">
+          <div style="display: flex; justify-content: space-between;">
+            <span>${item.label}</span>
+            <span>${item.value}</span>
+          </div>
+          <div style="background: #f0f0f0; height: 20px; border-radius: 10px;">
+            <div style="background: #007bff; height: 100%; width: ${percentage}%; border-radius: 10px;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Monthly Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .chart { margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Monthly Sales Report</h1>
+          <p>Generated on ${new Date().toLocaleDateString()}</p>
+        </div>
+        
+        <div class="chart">
+          <h2>Sales Performance</h2>
+          ${chartHtml}
+        </div>
+      </body>
+      </html>
+    `;
+
+    try {
+      const response = await fetch('https://api.fileslap.com/api/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': 'YOUR_API_KEY'
+        },
+        body: JSON.stringify({ html: htmlContent })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'monthly-report.pdf';
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error('Report generation failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={generateReport} disabled={loading}>
+        {loading ? 'Generating Report...' : 'Generate Report PDF'}
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+## Custom Hook for PDF Generation
+
+Create a reusable hook for PDF conversion:
+
+```javascript
+import { useState } from 'react';
+
+function usePdfConverter() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const convertToPdf = async (htmlContent, filename = 'generated.pdf') => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('https://api.fileslap.com/api/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': 'YOUR_API_KEY'
+        },
+        body: JSON.stringify({ html: htmlContent })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      return true;
+
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { convertToPdf, loading, error };
+}
+
+// Usage
+function MyComponent() {
+  const { convertToPdf, loading, error } = usePdfConverter();
+
+  const handleConvert = async () => {
+    const html = '<h1>Hello World</h1><p>This is a test.</p>';
+    await convertToPdf(html, 'test.pdf');
+  };
+
+  return (
+    <div>
+      <button onClick={handleConvert} disabled={loading}>
+        {loading ? 'Converting...' : 'Convert to PDF'}
+      </button>
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+    </div>
+  );
+}
+```
+
+---
+
+## Error Handling and Best Practices
+
+### Comprehensive Error Handling
+
+```javascript
+function PdfConverterWithErrorHandling() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const convertToPdf = async (htmlContent) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('https://api.fileslap.com/api/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': 'YOUR_API_KEY'
+        },
+        body: JSON.stringify({ html: htmlContent })
+      });
+
+      if (!response.ok) {
+        let errorMessage;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Invalid HTML content. Please check your markup.';
+            break;
+          case 401:
+            errorMessage = 'Invalid API key. Please check your credentials.';
+            break;
+          case 429:
+            errorMessage = 'Rate limit exceeded. Please try again later.';
+            break;
+          case 500:
+            errorMessage = 'Service temporarily unavailable. Please try again.';
+            break;
+          default:
+            errorMessage = `Unexpected error: ${response.status}`;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'generated.pdf';
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={() => convertToPdf('<h1>Test</h1>')} disabled={loading}>
+        {loading ? 'Converting...' : 'Convert to PDF'}
+      </button>
+      {error && (
+        <div style={{ color: 'red', marginTop: '10px' }}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Environment Variables
+
+Store your API key securely using environment variables:
+
+```javascript
+// .env
+REACT_APP_FILESLAP_API_KEY=your_api_key_here
+
+// In your component
+const API_KEY = process.env.REACT_APP_FILESLAP_API_KEY;
+```
+
+---
+
+## Real-World Use Cases
+
+### 1. E-commerce Invoice Generation
+
+```javascript
+function OrderInvoice({ order }) {
+  const { convertToPdf, loading } = usePdfConverter();
+
+  const generateInvoice = async () => {
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Invoice #${order.id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          .header { text-align: center; border-bottom: 2px solid #333; }
+          .items-table { width: 100%; border-collapse: collapse; }
+          .total { font-weight: bold; text-align: right; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>INVOICE</h1>
+          <p>Order #${order.id} | Date: ${order.date}</p>
+        </div>
+        
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.items.map(item => `
+              <tr>
+                <td>${item.name}</td>
+                <td>$${item.price}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        
+        <div class="total">
+          <p>Total: $${order.total}</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await convertToPdf(html, `invoice-${order.id}.pdf`);
+  };
+
+  return (
+    <button onClick={generateInvoice} disabled={loading}>
+      {loading ? 'Generating...' : 'Download Invoice'}
+    </button>
+  );
+}
+```
+
+### 2. User Dashboard Reports
+
+```javascript
+function DashboardReport({ userData }) {
+  const { convertToPdf, loading } = usePdfConverter();
+
+  const generateReport = async () => {
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>User Dashboard Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          .metric { margin: 20px 0; padding: 15px; background: #f8f9fa; }
+        </style>
+      </head>
+      <body>
+        <h1>Dashboard Report</h1>
+        <div class="metric">
+          <h3>Total Orders: ${userData.totalOrders}</h3>
+        </div>
+        <div class="metric">
+          <h3>Total Spent: $${userData.totalSpent}</h3>
+        </div>
+        <div class="metric">
+          <h3>Member Since: ${userData.joinDate}</h3>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await convertToPdf(html, 'dashboard-report.pdf');
+  };
+
+  return (
+    <button onClick={generateReport} disabled={loading}>
+      {loading ? 'Generating...' : 'Download Report'}
+    </button>
+  );
+}
+```
+
+---
+
+## Performance Tips
+
+### 1. Debounce API Calls
+
+```javascript
+import { useCallback } from 'react';
+import { debounce } from 'lodash';
+
+function DebouncedPdfConverter() {
+  const { convertToPdf, loading } = usePdfConverter();
+
+  const debouncedConvert = useCallback(
+    debounce((html) => convertToPdf(html), 500),
+    [convertToPdf]
+  );
+
+  return (
+    <button onClick={() => debouncedConvert('<h1>Test</h1>')} disabled={loading}>
+      Convert to PDF
+    </button>
+  );
+}
+```
+
+### 2. Cache Generated PDFs
+
+```javascript
+function CachedPdfConverter() {
+  const [cache, setCache] = useState(new Map());
+  const { convertToPdf, loading } = usePdfConverter();
+
+  const convertWithCache = async (htmlContent, filename) => {
+    const cacheKey = btoa(htmlContent); // Simple hash
+    
+    if (cache.has(cacheKey)) {
+      // Use cached PDF
+      const cachedBlob = cache.get(cacheKey);
+      const url = window.URL.createObjectURL(cachedBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      return;
+    }
+
+    // Generate new PDF
+    const response = await fetch('https://api.fileslap.com/api/convert', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': 'YOUR_API_KEY'
+      },
+      body: JSON.stringify({ html: htmlContent })
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      cache.set(cacheKey, blob);
+      setCache(new Map(cache));
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    }
+  };
+
+  return (
+    <button onClick={() => convertWithCache('<h1>Test</h1>', 'test.pdf')} disabled={loading}>
+      Convert to PDF
+    </button>
+  );
+}
+```
+
+---
+
+## Pricing and Limits
+
+- **Free Tier**: 50 conversions per month (perfect for testing)
+- **Pro Plan**: $19/month for 10,000 conversions
+- **Enterprise**: Custom pricing for high-volume needs
+
+Most React applications use 1-50 conversions per day, making the free tier perfect for getting started.
+
+---
+
+## Get Started Today
+
+Ready to add PDF generation to your React app?
+
+1. **Sign up** at [fileslap.com](https://fileslap.com)
+2. **Get your API key** from the dashboard
+3. **Start converting** React components to PDF with just a few lines of code
+
+No more wrestling with client-side PDF libraries or dealing with browser compatibility issues. The FileSlap API handles all the complexity while you focus on building great user experiences.
+
+---
+
+## Need Help?
+
+- **Documentation**: [fileslap.com/docs](https://fileslap.com/docs)
+- **API Reference**: Complete API documentation with examples
+- **Support**: Reach out to our team for custom integration help
+
+---
+
+*Transform your React components into professional PDFs with the power of our cloud-based API.*
+
+---
+
+**Tags**: #React #PDF #API #JavaScript #Frontend #WebDevelopment #FileSlap #Browser 

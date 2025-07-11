@@ -1,0 +1,347 @@
+# Automate PDF Generation with Zapier and FileSlap API
+
+*Transform your workflows by automatically converting HTML to PDF using Zapier and our powerful API*
+
+---
+
+## Why Automate PDF Generation with Zapier?
+
+In today's fast-paced business environment, manual PDF creation is a productivity killer. Zapier users need automated PDF generation for:
+- **Invoice automation** - Generate PDFs when new orders come in
+- **Report distribution** - Convert data to PDFs and email them automatically
+- **Document workflows** - Create PDFs from form submissions
+- **Content management** - Convert blog posts to printable formats
+- **Customer communications** - Generate personalized PDFs for each customer
+
+While Zapier has some built-in PDF tools, they're limited in functionality and customization. The FileSlap API integration gives you unlimited flexibility to create professional, branded PDFs from any HTML content.
+
+---
+
+## Setting Up Your FileSlap API Integration
+
+### 1. Get Your API Key
+
+First, sign up at [fileslap.com](https://fileslap.com) and grab your API key from the dashboard. It's free to start with 50 conversions per month.
+
+### 2. Create a Custom Zapier Integration
+
+Since FileSlap isn't a native Zapier app, we'll use Zapier's **Webhooks** action to connect to our API. Here's how to set it up:
+
+---
+
+## Basic HTML to PDF Automation
+
+### Step 1: Set Up Your Trigger
+
+Choose any Zapier trigger that provides the data you want to convert to PDF:
+- **Google Forms** - New form submission
+- **Typeform** - New response
+- **Airtable** - New record
+- **Gmail** - New email
+- **Slack** - New message
+- **Custom webhook** - Any external data source
+
+### Step 2: Configure the Webhook Action
+
+1. Add a **Webhooks by Zapier** action
+2. Choose **POST** as the method
+3. Set the URL to: `https://api.fileslap.com/api/convert`
+4. Configure the headers:
+
+```
+X-API-KEY: YOUR_API_KEY
+Content-Type: application/json
+```
+
+5. Set up the data payload:
+
+```json
+{
+  "html": "{{html_content}}"
+}
+```
+
+### Step 3: Handle the Response
+
+Add another action to save or send the generated PDF:
+- **Google Drive** - Save PDF to folder
+- **Gmail** - Send PDF as attachment
+- **Slack** - Upload PDF to channel
+- **Dropbox** - Save to cloud storage
+
+---
+
+## Real-World Zapier Workflows
+
+### 1. Automated Invoice Generation
+
+**Trigger**: New order in Shopify/Stripe
+**Action**: Generate PDF invoice and email to customer
+
+**Setup**:
+1. **Trigger**: New order in your e-commerce platform
+2. **Formatter**: Create HTML invoice template using order data
+3. **Webhook**: Send HTML to FileSlap API
+4. **Gmail**: Send PDF invoice to customer
+5. **Google Drive**: Save copy to invoices folder
+
+**HTML Template Example**:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice #{{order_number}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { text-align: center; border-bottom: 2px solid #333; }
+        .invoice-details { margin: 30px 0; }
+        .items-table { width: 100%; border-collapse: collapse; }
+        .total { font-weight: bold; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>INVOICE</h1>
+        <p>Order #{{order_number}} | Date: {{order_date}}</p>
+    </div>
+    
+    <div class="invoice-details">
+        <h3>Bill To:</h3>
+        <p>{{customer_name}}<br>
+        {{customer_email}}<br>
+        {{customer_address}}</p>
+    </div>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each order_items}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{quantity}}</td>
+                <td>${{price}}</td>
+                <td>${{total}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    
+    <div class="total">
+        <p>Total: ${{order_total}}</p>
+    </div>
+</body>
+</html>
+```
+
+### 2. Form Submission to PDF Report
+
+**Trigger**: New Google Form submission
+**Action**: Generate PDF report and share with team
+
+**Setup**:
+1. **Trigger**: New Google Form response
+2. **Formatter**: Transform form data into HTML report
+3. **Webhook**: Convert HTML to PDF via FileSlap
+4. **Slack**: Post PDF to team channel
+5. **Google Drive**: Archive report
+
+### 3. Email Newsletter to PDF Archive
+
+**Trigger**: New email in Gmail (filtered by newsletter label)
+**Action**: Convert to PDF and save to archive
+
+**Setup**:
+1. **Trigger**: New email in Gmail (with specific label)
+2. **Formatter**: Extract email content and format as HTML
+3. **Webhook**: Convert to PDF
+4. **Google Drive**: Save to "Newsletter Archive" folder
+5. **Notion**: Add entry to content database
+
+---
+
+## Advanced Zapier Configurations
+
+### Dynamic HTML Generation
+
+Use Zapier's **Formatter** step to build complex HTML dynamically:
+
+**Formatter Setup**:
+1. Add a **Formatter by Zapier** step
+2. Choose **Text** → **Create**
+3. Use this template:
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #f8f9fa; padding: 20px; border-radius: 5px; }
+        .content { margin: 20px 0; }
+        .footer { text-align: center; color: #666; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{title}}</h1>
+        <p>Generated on {{current_date}}</p>
+    </div>
+    
+    <div class="content">
+        {{content}}
+    </div>
+    
+    <div class="footer">
+        <p>Generated automatically by FileSlap API</p>
+    </div>
+</body>
+</html>
+```
+
+### Conditional PDF Generation
+
+Add logic to only generate PDFs under certain conditions:
+
+1. **Filter by Zapier**: Only proceed if conditions are met
+2. **Formatter**: Check data validity
+3. **Webhook**: Generate PDF only when needed
+
+**Filter Example**:
+- Only generate invoice PDFs for orders over $50
+- Only convert emails that contain specific keywords
+- Only process form submissions during business hours
+
+---
+
+## Error Handling and Reliability
+
+### Webhook Error Handling
+
+Configure your webhook action with proper error handling:
+
+1. **Set timeout**: 30 seconds for large documents
+2. **Add retry logic**: Configure automatic retries
+3. **Error notifications**: Send alerts on failures
+
+### Fallback Actions
+
+Add backup steps in case PDF generation fails:
+
+1. **Conditional logic**: Check webhook response
+2. **Alternative action**: Send plain text version
+3. **Notification**: Alert admin of failure
+
+---
+
+## Popular Zapier + FileSlap Combinations
+
+### E-commerce Workflows
+- **Shopify** → **FileSlap** → **Gmail** (Order confirmations)
+- **Stripe** → **FileSlap** → **Google Drive** (Payment receipts)
+- **WooCommerce** → **FileSlap** → **Slack** (Daily sales reports)
+
+### Content Management
+- **WordPress** → **FileSlap** → **Dropbox** (Blog post archives)
+- **Medium** → **FileSlap** → **Notion** (Content backup)
+- **Substack** → **FileSlap** → **Google Drive** (Newsletter archives)
+
+### Customer Service
+- **Intercom** → **FileSlap** → **Gmail** (Support ticket summaries)
+- **Zendesk** → **FileSlap** → **Slack** (Daily ticket reports)
+- **Freshdesk** → **FileSlap** → **Google Drive** (Customer documentation)
+
+### Marketing Automation
+- **Mailchimp** → **FileSlap** → **Google Drive** (Campaign reports)
+- **ConvertKit** → **FileSlap** → **Slack** (Subscriber analytics)
+- **ActiveCampaign** → **FileSlap** → **Gmail** (Lead nurturing materials)
+
+---
+
+## Pro Tips for Zapier Users
+
+### 1. Optimize for Speed
+- Use lightweight HTML templates
+- Minimize external CSS and images
+- Set appropriate webhook timeouts
+
+### 2. Handle Large Data
+- Break large datasets into smaller chunks
+- Use pagination for multiple PDFs
+- Implement rate limiting for high-volume workflows
+
+### 3. Maintain Quality
+- Test HTML templates thoroughly
+- Validate data before PDF generation
+- Monitor webhook success rates
+
+### 4. Cost Optimization
+- Use FileSlap's free tier for testing
+- Batch similar requests together
+- Cache frequently used templates
+
+---
+
+## Troubleshooting Common Issues
+
+### Webhook Timeouts
+**Problem**: PDF generation takes too long
+**Solution**: Increase timeout settings and optimize HTML size
+
+### Authentication Errors
+**Problem**: API key not working
+**Solution**: Verify API key format and check account status
+
+### Malformed HTML
+**Problem**: PDFs not generating correctly
+**Solution**: Validate HTML structure and test templates
+
+### Rate Limiting
+**Problem**: Too many requests
+**Solution**: Implement delays between requests and monitor usage
+
+---
+
+## Pricing and Scaling
+
+- **Free Tier**: 50 conversions per month (perfect for testing)
+- **Pro Plan**: $19/month for 10,000 conversions
+- **Enterprise**: Custom pricing for high-volume automation
+
+Most Zapier workflows use 1-10 conversions per day, making the free tier perfect for getting started.
+
+---
+
+## Get Started Today
+
+Ready to automate your PDF generation?
+
+1. **Sign up** at [fileslap.com](https://fileslap.com)
+2. **Get your API key** from the dashboard
+3. **Create your first Zap** using the webhook method above
+4. **Test with a simple workflow** before scaling up
+
+No coding required - just connect your apps and let Zapier handle the automation while FileSlap creates beautiful PDFs.
+
+---
+
+## Need Help?
+
+- **Documentation**: [fileslap.com/docs](https://fileslap.com/docs)
+- **Zapier Templates**: Search for "FileSlap" in Zapier's template library
+- **Support**: Reach out to our team for custom integration help
+
+---
+
+*Transform your manual PDF processes into automated workflows that save hours every week.*
+
+---
+
+**Tags**: #Zapier #Automation #PDF #API #Workflow #Productivity #FileSlap #NoCode 

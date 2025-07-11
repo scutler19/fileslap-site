@@ -1,0 +1,347 @@
+# Automate PDF Generation with Make.com and FileSlap API
+
+*Transform your workflows by automatically converting HTML to PDF using Make.com and our powerful API*
+
+---
+
+## Why Automate PDF Generation with Make.com?
+
+Make.com (formerly Integromat) users need automated PDF generation for:
+- **Invoice automation** - Generate PDFs when new orders come in
+- **Report distribution** - Convert data to PDFs and email them automatically
+- **Document workflows** - Create PDFs from form submissions
+- **Content management** - Convert blog posts to printable formats
+- **Customer communications** - Generate personalized PDFs for each customer
+
+While Make.com has some built-in PDF tools, they're limited in functionality and customization. The FileSlap API integration gives you unlimited flexibility to create professional, branded PDFs from any HTML content.
+
+---
+
+## Setting Up Your FileSlap API Integration
+
+### 1. Get Your API Key
+
+First, sign up at [fileslap.com](https://fileslap.com) and grab your API key from the dashboard. It's free to start with 50 conversions per month.
+
+### 2. Create a Custom Make.com Integration
+
+Since FileSlap isn't a native Make.com app, we'll use Make.com's **HTTP** module to connect to our API. Here's how to set it up:
+
+---
+
+## Basic HTML to PDF Automation
+
+### Step 1: Set Up Your Trigger
+
+Choose any Make.com trigger that provides the data you want to convert to PDF:
+- **Google Forms** - New form submission
+- **Typeform** - New response
+- **Airtable** - New record
+- **Gmail** - New email
+- **Slack** - New message
+- **Custom webhook** - Any external data source
+
+### Step 2: Configure the HTTP Module
+
+1. Add an **HTTP** module to your scenario
+2. Choose **Make an HTTP request**
+3. Configure the request settings:
+
+**URL**: `https://api.fileslap.com/api/convert`
+**Method**: POST
+**Headers**:
+```
+X-API-KEY: YOUR_API_KEY
+Content-Type: application/json
+```
+
+**Body** (JSON):
+```json
+{
+  "html": "{{html_content}}"
+}
+```
+
+### Step 3: Handle the Response
+
+The HTTP module will return the PDF as binary data. Connect it to:
+- **Google Drive** - Upload file
+- **Gmail** - Send as attachment
+- **Slack** - Upload to channel
+- **Dropbox** - Upload file
+
+---
+
+## Real-World Make.com Scenarios
+
+### 1. Automated Invoice Generation
+
+**Trigger**: New order in Shopify/Stripe
+**Action**: Generate PDF invoice and email to customer
+
+**Setup**:
+1. **Trigger**: New order in your e-commerce platform
+2. **Set Variable**: Create HTML invoice template using order data
+3. **HTTP**: Send HTML to FileSlap API
+4. **Gmail**: Send PDF invoice to customer
+5. **Google Drive**: Save copy to invoices folder
+
+**HTML Template Example**:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice #{{order_number}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { text-align: center; border-bottom: 2px solid #333; }
+        .invoice-details { margin: 30px 0; }
+        .items-table { width: 100%; border-collapse: collapse; }
+        .total { font-weight: bold; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>INVOICE</h1>
+        <p>Order #{{order_number}} | Date: {{order_date}}</p>
+    </div>
+    
+    <div class="invoice-details">
+        <h3>Bill To:</h3>
+        <p>{{customer_name}}<br>
+        {{customer_email}}<br>
+        {{customer_address}}</p>
+    </div>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each order_items}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{quantity}}</td>
+                <td>${{price}}</td>
+                <td>${{total}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    
+    <div class="total">
+        <p>Total: ${{order_total}}</p>
+    </div>
+</body>
+</html>
+```
+
+### 2. Form Submission to PDF Report
+
+**Trigger**: New Google Form submission
+**Action**: Generate PDF report and share with team
+
+**Setup**:
+1. **Trigger**: New Google Form response
+2. **Set Variable**: Transform form data into HTML report
+3. **HTTP**: Convert HTML to PDF via FileSlap
+4. **Slack**: Post PDF to team channel
+5. **Google Drive**: Archive report
+
+### 3. Email Newsletter to PDF Archive
+
+**Trigger**: New email in Gmail (filtered by newsletter label)
+**Action**: Convert to PDF and save to archive
+
+**Setup**:
+1. **Trigger**: New email in Gmail (with specific label)
+2. **Set Variable**: Extract email content and format as HTML
+3. **HTTP**: Convert to PDF
+4. **Google Drive**: Save to "Newsletter Archive" folder
+5. **Notion**: Add entry to content database
+
+---
+
+## Advanced Make.com Configurations
+
+### Dynamic HTML Generation
+
+Use Make.com's **Set Variable** module to build complex HTML dynamically:
+
+**Set Variable Configuration**:
+1. Add a **Set Variable** module
+2. Configure the HTML template:
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #f8f9fa; padding: 20px; border-radius: 5px; }
+        .content { margin: 20px 0; }
+        .footer { text-align: center; color: #666; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{title}}</h1>
+        <p>Generated on {{current_date}}</p>
+    </div>
+    
+    <div class="content">
+        {{content}}
+    </div>
+    
+    <div class="footer">
+        <p>Generated automatically by FileSlap API</p>
+    </div>
+</body>
+</html>
+```
+
+### Conditional PDF Generation
+
+Add logic to only generate PDFs under certain conditions:
+
+1. **Router**: Only proceed if conditions are met
+2. **Set Variable**: Check data validity
+3. **HTTP**: Generate PDF only when needed
+
+**Router Example**:
+- Only generate invoice PDFs for orders over $50
+- Only convert emails that contain specific keywords
+- Only process form submissions during business hours
+
+---
+
+## Error Handling and Reliability
+
+### HTTP Error Handling
+
+Configure your HTTP module with proper error handling:
+
+1. **Set timeout**: 30 seconds for large documents
+2. **Add error handling**: Configure error paths
+3. **Error notifications**: Send alerts on failures
+
+### Fallback Actions
+
+Add backup steps in case PDF generation fails:
+
+1. **Router**: Check HTTP response status
+2. **Alternative action**: Send plain text version
+3. **Notification**: Alert admin of failure
+
+---
+
+## Popular Make.com + FileSlap Combinations
+
+### E-commerce Workflows
+- **Shopify** → **FileSlap** → **Gmail** (Order confirmations)
+- **Stripe** → **FileSlap** → **Google Drive** (Payment receipts)
+- **WooCommerce** → **FileSlap** → **Slack** (Daily sales reports)
+
+### Content Management
+- **WordPress** → **FileSlap** → **Dropbox** (Blog post archives)
+- **Medium** → **FileSlap** → **Notion** (Content backup)
+- **Substack** → **FileSlap** → **Google Drive** (Newsletter archives)
+
+### Customer Service
+- **Intercom** → **FileSlap** → **Gmail** (Support ticket summaries)
+- **Zendesk** → **FileSlap** → **Slack** (Daily ticket reports)
+- **Freshdesk** → **FileSlap** → **Google Drive** (Customer documentation)
+
+### Marketing Automation
+- **Mailchimp** → **FileSlap** → **Google Drive** (Campaign reports)
+- **ConvertKit** → **FileSlap** → **Slack** (Subscriber analytics)
+- **ActiveCampaign** → **FileSlap** → **Gmail** (Lead nurturing materials)
+
+---
+
+## Pro Tips for Make.com Users
+
+### 1. Optimize for Speed
+- Use lightweight HTML templates
+- Minimize external CSS and images
+- Set appropriate HTTP timeouts
+
+### 2. Handle Large Data
+- Break large datasets into smaller chunks
+- Use pagination for multiple PDFs
+- Implement rate limiting for high-volume workflows
+
+### 3. Maintain Quality
+- Test HTML templates thoroughly
+- Validate data before PDF generation
+- Monitor HTTP success rates
+
+### 4. Cost Optimization
+- Use FileSlap's free tier for testing
+- Batch similar requests together
+- Cache frequently used templates
+
+---
+
+## Troubleshooting Common Issues
+
+### HTTP Timeouts
+**Problem**: PDF generation takes too long
+**Solution**: Increase timeout settings and optimize HTML size
+
+### Authentication Errors
+**Problem**: API key not working
+**Solution**: Verify API key format and check account status
+
+### Malformed HTML
+**Problem**: PDFs not generating correctly
+**Solution**: Validate HTML structure and test templates
+
+### Rate Limiting
+**Problem**: Too many requests
+**Solution**: Implement delays between requests and monitor usage
+
+---
+
+## Pricing and Scaling
+
+- **Free Tier**: 50 conversions per month (perfect for testing)
+- **Pro Plan**: $19/month for 10,000 conversions
+- **Enterprise**: Custom pricing for high-volume automation
+
+Most Make.com workflows use 1-10 conversions per day, making the free tier perfect for getting started.
+
+---
+
+## Get Started Today
+
+Ready to automate your PDF generation?
+
+1. **Sign up** at [fileslap.com](https://fileslap.com)
+2. **Get your API key** from the dashboard
+3. **Create your first scenario** using the HTTP module method above
+4. **Test with a simple workflow** before scaling up
+
+No coding required - just connect your apps and let Make.com handle the automation while FileSlap creates beautiful PDFs.
+
+---
+
+## Need Help?
+
+- **Documentation**: [fileslap.com/docs](https://fileslap.com/docs)
+- **Make.com Templates**: Search for "FileSlap" in Make.com's template library
+- **Support**: Reach out to our team for custom integration help
+
+---
+
+*Transform your manual PDF processes into automated workflows that save hours every week.*
+
+---
+
+**Tags**: #Make #Automation #PDF #API #Workflow #Productivity #FileSlap #NoCode 

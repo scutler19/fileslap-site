@@ -1,0 +1,422 @@
+# Build Powerful PDF Workflows with n8n and FileSlap API
+
+*Create sophisticated automation workflows that generate professional PDFs using n8n and our cloud-based API*
+
+---
+
+## Why Use n8n for PDF Generation?
+
+n8n is the ultimate automation platform for developers and power users who need:
+- **Complex workflow logic** - Conditional branching, loops, and data transformation
+- **Self-hosted control** - Keep your data and workflows on your own infrastructure
+- **Advanced integrations** - Connect to databases, APIs, and custom services
+- **Visual workflow builder** - Design complex automations without coding
+- **Extensive node library** - 200+ built-in integrations plus custom nodes
+
+While n8n has some basic PDF capabilities, the FileSlap API integration unlocks unlimited possibilities for creating professional, branded PDFs from any HTML content with advanced formatting and styling.
+
+---
+
+## Setting Up FileSlap API in n8n
+
+### 1. Get Your API Key
+
+First, sign up at [fileslap.com](https://fileslap.com) and grab your API key from the dashboard. It's free to start with 50 conversions per month.
+
+### 2. Configure the HTTP Request Node
+
+n8n's HTTP Request node is perfect for integrating with the FileSlap API. Here's how to set it up:
+
+---
+
+## Basic HTML to PDF Workflow
+
+### Step 1: Create Your Workflow
+
+1. Open n8n and create a new workflow
+2. Add a **Trigger** node (Webhook, Schedule, or Manual)
+3. Add an **HTTP Request** node for FileSlap API
+4. Add **Output** nodes for saving/sending the PDF
+
+### Step 2: Configure the HTTP Request Node
+
+**Node Settings**:
+- **Method**: POST
+- **URL**: `https://api.fileslap.com/api/convert`
+- **Authentication**: Header Auth
+- **Header Name**: `X-API-KEY`
+- **Header Value**: `YOUR_API_KEY`
+
+**Request Body** (JSON):
+```json
+{
+  "html": "{{$json.html_content}}"
+}
+```
+
+### Step 3: Handle the Response
+
+The HTTP Request node will return the PDF as binary data. Connect it to:
+- **Write Binary File** node (save locally)
+- **Google Drive** node (upload to cloud)
+- **Gmail** node (send as attachment)
+- **Slack** node (upload to channel)
+
+---
+
+## Advanced n8n Workflows
+
+### 1. Dynamic Invoice Generation
+
+**Workflow**: Database → Template → PDF → Email
+
+**Setup**:
+1. **Database** node: Query orders from your database
+2. **Code** node: Transform data into HTML template
+3. **HTTP Request** node: Convert HTML to PDF via FileSlap
+4. **Gmail** node: Send PDF invoice to customer
+5. **Database** node: Update order status
+
+**Code Node Example** (JavaScript):
+```javascript
+const orders = $input.all();
+const htmlTemplates = [];
+
+for (const order of orders) {
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Invoice #${order.order_number}</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .header { text-align: center; border-bottom: 2px solid #333; }
+            .invoice-details { margin: 30px 0; }
+            .items-table { width: 100%; border-collapse: collapse; }
+            .total { font-weight: bold; text-align: right; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>INVOICE</h1>
+            <p>Order #${order.order_number} | Date: ${order.order_date}</p>
+        </div>
+        
+        <div class="invoice-details">
+            <h3>Bill To:</h3>
+            <p>${order.customer_name}<br>
+            ${order.customer_email}<br>
+            ${order.customer_address}</p>
+        </div>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${order.items.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${item.price}</td>
+                        <td>$${item.quantity * item.price}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        
+        <div class="total">
+            <p>Total: $${order.total}</p>
+        </div>
+    </body>
+    </html>
+  `;
+  
+  htmlTemplates.push({
+    json: {
+      html_content: html,
+      customer_email: order.customer_email,
+      order_number: order.order_number
+    }
+  });
+}
+
+return htmlTemplates;
+```
+
+### 2. Multi-Source Report Generation
+
+**Workflow**: Multiple APIs → Data Processing → PDF → Distribution
+
+**Setup**:
+1. **HTTP Request** nodes: Fetch data from multiple sources
+2. **Merge** node: Combine data from different sources
+3. **Code** node: Process and format data
+4. **HTTP Request** node: Generate PDF report
+5. **Split** node: Distribute to multiple channels
+
+### 3. Conditional PDF Processing
+
+**Workflow**: Data Input → Conditions → Different PDF Types
+
+**Setup**:
+1. **Trigger** node: Receive data
+2. **IF** node: Check conditions (order amount, customer type, etc.)
+3. **HTTP Request** nodes: Generate different PDF types based on conditions
+4. **Merge** node: Combine results
+5. **Output** nodes: Send to appropriate destinations
+
+---
+
+## Advanced n8n Configurations
+
+### Error Handling and Retries
+
+Configure robust error handling:
+
+1. **HTTP Request** node: Set retry options
+2. **IF** node: Check for errors in response
+3. **Code** node: Handle different error types
+4. **HTTP Request** node: Retry with different parameters
+5. **Gmail** node: Send error notifications
+
+### Batch Processing
+
+Process multiple documents efficiently:
+
+1. **Code** node: Split large datasets into batches
+2. **Loop** node: Process each batch
+3. **HTTP Request** node: Generate PDFs
+4. **Merge** node: Combine results
+5. **Output** node: Save or send batch results
+
+---
+
+## Real-World n8n + FileSlap Use Cases
+
+### E-commerce Automation
+- **Order Processing**: Generate invoices, receipts, and shipping labels
+- **Customer Communications**: Create personalized welcome packets
+- **Inventory Reports**: Daily/weekly inventory summaries
+- **Sales Analytics**: Convert dashboard data to printable reports
+
+### Content Management
+- **Blog Archives**: Convert blog posts to PDF for offline reading
+- **Newsletter Compilations**: Monthly newsletter summaries
+- **Documentation**: Convert markdown to PDF for distribution
+- **Social Media Reports**: Analytics and performance summaries
+
+### Business Operations
+- **Financial Reports**: Monthly/quarterly financial summaries
+- **HR Documentation**: Employee handbooks, policies, and forms
+- **Project Reports**: Status updates and milestone summaries
+- **Meeting Minutes**: Convert notes to formal PDF documents
+
+### Customer Service
+- **Support Tickets**: Generate ticket summaries and resolutions
+- **Knowledge Base**: Convert help articles to PDF guides
+- **Customer Onboarding**: Welcome packets and setup guides
+- **Feedback Reports**: Customer survey results and analysis
+
+---
+
+## Performance Optimization
+
+### 1. Parallel Processing
+
+Use n8n's parallel execution capabilities:
+
+1. **Split** node: Divide work into parallel streams
+2. **HTTP Request** nodes: Process multiple PDFs simultaneously
+3. **Merge** node: Combine results when complete
+
+### 2. Caching Strategies
+
+Implement caching for frequently used templates:
+
+1. **Code** node: Check cache for existing templates
+2. **IF** node: Use cached version or generate new
+3. **HTTP Request** node: Generate only when needed
+
+### 3. Rate Limiting
+
+Handle API rate limits gracefully:
+
+1. **Code** node: Implement delays between requests
+2. **Queue** node: Process requests in order
+3. **Error handling**: Retry with exponential backoff
+
+---
+
+## Advanced Data Transformation
+
+### Database Integration
+
+Connect directly to your databases:
+
+```javascript
+// PostgreSQL/MySQL query results to HTML
+const records = $input.all();
+const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Database Report</title>
+    <style>
+      table { width: 100%; border-collapse: collapse; }
+      th, td { border: 1px solid #ddd; padding: 8px; }
+      th { background-color: #f2f2f2; }
+    </style>
+  </head>
+  <body>
+    <h1>Database Report</h1>
+    <table>
+      <thead>
+        <tr>
+          ${Object.keys(records[0].json).map(key => `<th>${key}</th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>
+        ${records.map(record => `
+          <tr>
+            ${Object.values(record.json).map(value => `<td>${value}</td>`).join('')}
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </body>
+  </html>
+`;
+
+return [{ json: { html_content: html } }];
+```
+
+### API Data Aggregation
+
+Combine data from multiple APIs:
+
+```javascript
+// Combine data from multiple sources
+const salesData = $('Sales API').all();
+const customerData = $('Customer API').all();
+const inventoryData = $('Inventory API').all();
+
+// Create comprehensive report
+const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Comprehensive Business Report</title>
+    <style>
+      .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+      .metric { display: inline-block; margin: 10px; padding: 10px; background: #f8f9fa; }
+    </style>
+  </head>
+  <body>
+    <h1>Business Report - ${new Date().toLocaleDateString()}</h1>
+    
+    <div class="section">
+      <h2>Sales Summary</h2>
+      <div class="metric">Total Sales: $${salesData.reduce((sum, item) => sum + item.json.amount, 0)}</div>
+      <div class="metric">Orders: ${salesData.length}</div>
+    </div>
+    
+    <div class="section">
+      <h2>Customer Overview</h2>
+      <div class="metric">Active Customers: ${customerData.length}</div>
+      <div class="metric">New This Month: ${customerData.filter(c => c.json.created_this_month).length}</div>
+    </div>
+    
+    <div class="section">
+      <h2>Inventory Status</h2>
+      <div class="metric">Low Stock Items: ${inventoryData.filter(i => i.json.quantity < 10).length}</div>
+      <div class="metric">Total SKUs: ${inventoryData.length}</div>
+    </div>
+  </body>
+  </html>
+`;
+
+return [{ json: { html_content: html } }];
+```
+
+---
+
+## Monitoring and Debugging
+
+### Workflow Monitoring
+
+1. **n8n Execution Logs**: Monitor workflow performance
+2. **HTTP Request Response**: Check API call success/failure
+3. **Error Handling**: Capture and log errors
+4. **Performance Metrics**: Track execution times
+
+### Debugging Tips
+
+1. **Test with Sample Data**: Use small datasets for testing
+2. **Validate HTML**: Check HTML structure before API calls
+3. **Monitor API Usage**: Track conversion counts and limits
+4. **Error Notifications**: Set up alerts for workflow failures
+
+---
+
+## Security Best Practices
+
+### API Key Management
+
+1. **Environment Variables**: Store API keys securely
+2. **Access Control**: Limit API key permissions
+3. **Rotation**: Regularly rotate API keys
+4. **Monitoring**: Track API key usage
+
+### Data Protection
+
+1. **Input Validation**: Validate all input data
+2. **Output Sanitization**: Clean output before PDF generation
+3. **Access Logging**: Log all PDF generation requests
+4. **Secure Storage**: Store PDFs in secure locations
+
+---
+
+## Pricing and Scaling
+
+- **Free Tier**: 50 conversions per month (perfect for testing)
+- **Pro Plan**: $19/month for 10,000 conversions
+- **Enterprise**: Custom pricing for high-volume workflows
+
+Most n8n workflows use 5-50 conversions per day, making the free tier perfect for development and small-scale automation.
+
+---
+
+## Get Started Today
+
+Ready to build powerful PDF automation workflows?
+
+1. **Sign up** at [fileslap.com](https://fileslap.com)
+2. **Get your API key** from the dashboard
+3. **Install n8n** (self-hosted or cloud)
+4. **Create your first workflow** using the HTTP Request node
+5. **Test with simple HTML** before building complex workflows
+
+n8n + FileSlap = Unlimited automation possibilities for professional PDF generation.
+
+---
+
+## Need Help?
+
+- **Documentation**: [fileslap.com/docs](https://fileslap.com/docs)
+- **n8n Community**: Join the n8n Discord for workflow help
+- **API Reference**: Complete API documentation with examples
+- **Support**: Reach out to our team for custom integration help
+
+---
+
+*Transform your data into professional PDFs with the power of n8n automation and FileSlap's cloud-based API.*
+
+---
+
+**Tags**: #n8n #Automation #PDF #API #Workflow #SelfHosted #FileSlap #Integration 

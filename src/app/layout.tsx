@@ -138,6 +138,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${robotoMono.variable} min-h-screen flex flex-col bg-[#0D0D11] text-white antialiased leading-relaxed text-base`}
       >
+        {/* Skip to content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only absolute left-2 top-2 z-50 bg-[#1DEE7F] text-[#0D0D11] font-semibold px-4 py-2 rounded transition shadow-lg"
+        >
+          Skip to main content
+        </a>
         <header className="flex items-center justify-between px-6 py-4 bg-[#0D0D11]">
           <div></div>
           <nav className="flex gap-6 text-sm text-white/80">

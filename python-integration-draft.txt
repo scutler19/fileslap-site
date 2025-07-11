@@ -1,0 +1,379 @@
+# Convert HTML to PDF with Python: A Complete Guide to Using the FileSlap API
+
+*Transform your HTML content into professional PDFs using Python and our powerful API*
+
+---
+
+## Why Convert HTML to PDF with Python?
+
+Python developers often need to generate PDFs from HTML content for:
+- **Report generation** - Create automated business reports
+- **Invoice creation** - Generate professional invoices from templates
+- **Documentation** - Convert web content to printable formats
+- **Email attachments** - Send formatted documents via email
+- **Data visualization** - Turn charts and graphs into shareable PDFs
+
+While there are local Python libraries like `weasyprint` or `pdfkit`, they come with installation headaches, dependency issues, and inconsistent rendering across different systems. That's where the FileSlap API comes in - a cloud-based solution that handles all the complexity for you.
+
+---
+
+## Getting Started with FileSlap API
+
+### 1. Get Your API Key
+
+First, sign up at [fileslap.com](https://fileslap.com) and grab your API key from the dashboard. It's free to start with 50 conversions per month.
+
+### 2. Install Required Libraries
+
+```bash
+pip install requests
+```
+
+That's it! No complex PDF libraries or system dependencies to worry about.
+
+---
+
+## Basic HTML to PDF Conversion
+
+Here's the simplest way to convert HTML to PDF:
+
+```python
+import requests
+
+def convert_html_to_pdf(html_content, api_key):
+    url = "https://api.fileslap.com/api/convert"
+    
+    headers = {
+        "X-API-KEY": api_key,
+        "Content-Type": "application/json"
+    }
+    
+    data = {
+        "html": html_content
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    
+    if response.status_code == 200:
+        # Save the PDF
+        with open("output.pdf", "wb") as f:
+            f.write(response.content)
+        print("PDF created successfully!")
+    else:
+        print(f"Error: {response.status_code}")
+        print(response.text)
+
+# Example usage
+html_content = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sample Document</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Hello from Python!</h1>
+    <p>This HTML was converted to PDF using the FileSlap API.</p>
+</body>
+</html>
+"""
+
+api_key = "your_api_key_here"
+convert_html_to_pdf(html_content, api_key)
+```
+
+---
+
+## Advanced Usage
+
+### Error Handling and Retries
+
+```python
+import time
+from requests.exceptions import RequestException
+
+def convert_with_retry(html_content, api_key, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            response = convert_html_to_pdf(html_content, api_key)
+            
+            if response.status_code == 200:
+                return response
+            elif response.status_code == 429:  # Rate limit
+                wait_time = 2 ** attempt
+                print(f"Rate limited. Waiting {wait_time} seconds...")
+                time.sleep(wait_time)
+            else:
+                print(f"Error {response.status_code}: {response.text}")
+                return None
+                
+        except RequestException as e:
+            print(f"Request failed: {e}")
+            if attempt == max_retries - 1:
+                raise
+    
+    return None
+```
+
+### Validate HTML Content
+
+```python
+def validate_html(html_content):
+    """Basic HTML validation"""
+    required_tags = ['<html>', '<head>', '<body>']
+    html_lower = html_content.lower()
+    
+    for tag in required_tags:
+        if tag not in html_lower:
+            return False
+    
+    return True
+
+def safe_convert(html_content, api_key):
+    if not validate_html(html_content):
+        raise ValueError("Invalid HTML content")
+    
+    return convert_html_to_pdf(html_content, api_key)
+```
+
+---
+
+## Real-World Examples
+
+### 1. Invoice Generator
+
+```python
+import datetime
+
+def generate_invoice(customer_name, items, total, api_key):
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Invoice</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; }}
+            .header {{ text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; }}
+            .invoice-details {{ margin: 30px 0; }}
+            .items-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+            .items-table th, .items-table td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+            .total {{ font-weight: bold; font-size: 18px; text-align: right; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>INVOICE</h1>
+            <p>Date: {datetime.datetime.now().strftime('%Y-%m-%d')}</p>
+        </div>
+        
+        <div class="invoice-details">
+            <h3>Bill To:</h3>
+            <p>{customer_name}</p>
+        </div>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {''.join([f'<tr><td>{item["name"]}</td><td>{item["quantity"]}</td><td>${item["price"]}</td><td>${item["quantity"] * item["price"]}</td></tr>' for item in items])}
+            </tbody>
+        </table>
+        
+        <div class="total">
+            <p>Total: ${total}</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return convert_html_to_pdf(html_content, api_key)
+
+# Usage
+items = [
+    {"name": "Web Development", "quantity": 1, "price": 1500},
+    {"name": "Hosting Setup", "quantity": 1, "price": 200}
+]
+generate_invoice("John Doe", items, 1700, "your_api_key")
+```
+
+### 2. Report Generator with Charts
+
+```python
+import datetime
+
+def generate_report(data, api_key):
+    # Create a simple chart using HTML/CSS
+    chart_html = ""
+    for item in data:
+        percentage = (item['value'] / max([d['value'] for d in data])) * 100
+        chart_html += f"""
+        <div style="margin: 10px 0;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>{item['label']}</span>
+                <span>{item['value']}</span>
+            </div>
+            <div style="background: #f0f0f0; height: 20px; border-radius: 10px;">
+                <div style="background: #007bff; height: 100%; width: {percentage}%; border-radius: 10px;"></div>
+            </div>
+        </div>
+        """
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Monthly Report</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; }}
+            .header {{ text-align: center; margin-bottom: 30px; }}
+            .chart {{ margin: 20px 0; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Monthly Sales Report</h1>
+            <p>Generated on {datetime.datetime.now().strftime('%Y-%m-%d')}</p>
+        </div>
+        
+        <div class="chart">
+            <h2>Sales Performance</h2>
+            {chart_html}
+        </div>
+    </body>
+    </html>
+    """
+    
+    return convert_html_to_pdf(html_content, api_key)
+
+# Usage
+data = [
+    {"label": "Product A", "value": 1500},
+    {"label": "Product B", "value": 2200},
+    {"label": "Product C", "value": 800}
+]
+generate_report(data, "your_api_key")
+```
+
+---
+
+## Performance Tips
+
+1. **Batch Processing**: Convert multiple documents in parallel
+2. **Caching**: Store frequently used templates
+3. **Async Processing**: Use `aiohttp` for non-blocking requests
+4. **Template Engines**: Use Jinja2 for dynamic content
+
+```python
+import asyncio
+import aiohttp
+from jinja2 import Template
+
+async def batch_convert(templates, api_key):
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for template in templates:
+            task = convert_async(session, template, api_key)
+            tasks.append(task)
+        
+        results = await asyncio.gather(*tasks)
+        return results
+
+async def convert_async(session, html_content, api_key):
+    url = "https://api.fileslap.com/api/convert"
+    headers = {
+        "X-API-KEY": api_key,
+        "Content-Type": "application/json"
+    }
+    data = {"html": html_content}
+    
+    async with session.post(url, headers=headers, json=data) as response:
+        return await response.read()
+```
+
+---
+
+## Integration with Popular Frameworks
+
+### Flask Integration
+
+```python
+from flask import Flask, request, send_file
+import io
+
+app = Flask(__name__)
+
+@app.route('/generate-pdf', methods=['POST'])
+def generate_pdf():
+    html_content = request.json.get('html')
+    api_key = "your_api_key"
+    
+    response = convert_html_to_pdf(html_content, api_key)
+    
+    if response and response.status_code == 200:
+        pdf_io = io.BytesIO(response.content)
+        pdf_io.seek(0)
+        return send_file(pdf_io, mimetype='application/pdf')
+    else:
+        return {"error": "PDF generation failed"}, 400
+```
+
+### Django Integration
+
+```python
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def generate_pdf_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        html_content = data.get('html')
+        api_key = "your_api_key"
+        
+        response = convert_html_to_pdf(html_content, api_key)
+        
+        if response and response.status_code == 200:
+            return HttpResponse(response.content, content_type='application/pdf')
+        else:
+            return HttpResponse("PDF generation failed", status=400)
+```
+
+---
+
+## Pricing and Limits
+
+- **Free Tier**: 50 conversions per month (perfect for testing)
+- **Pro Plan**: $19/month for 10,000 conversions
+- **Enterprise**: Custom pricing for high-volume needs
+
+Perfect for both small projects and production applications.
+
+---
+
+## Get Started Today
+
+Ready to simplify your PDF generation? 
+
+1. **Sign up** at [fileslap.com](https://fileslap.com)
+2. **Get your API key** from the dashboard
+3. **Start converting** HTML to PDF with just a few lines of Python code
+
+No more wrestling with local PDF libraries or dealing with system dependencies. The FileSlap API handles all the complexity while you focus on building great applications.
+
+---
+
+*Need help? Check out our [documentation](https://fileslap.com/docs) or reach out to our support team.*
+
+---
+
+**Tags**: #Python #PDF #API #HTML #Automation #WebDevelopment #FileSlap 
