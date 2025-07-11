@@ -128,7 +128,7 @@ export default function Home() {
         </p>
 
         {/* ── Call-to-Action Buttons ───────────────────── */}
-        <section className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
           <a
             href="/signup"
             className="rounded-full bg-[#1DEE7F] px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-[#0D0D11] hover:brightness-110 transition duration-200 shadow-lg hover:shadow-xl"
@@ -143,7 +143,14 @@ export default function Home() {
           >
             Read Docs
           </a>
-      </section>
+          <a
+            href="/html-2-pdf"
+            className="rounded-full border-2 border-white px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white hover:bg-white/10 transition duration-200"
+            aria-label="HTML 2 PDF Converter"
+          >
+            HTML 2 PDF Converter
+          </a>
+        </div>
     </main>
       {/* Sticky Get API Key button for mobile */}
       <a
