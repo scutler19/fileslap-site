@@ -2,7 +2,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter, Roboto_Mono } from 'next/font/google';
-// import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const inter = Inter({ 
@@ -145,14 +145,44 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <header className="flex items-center justify-between px-6 py-4 bg-[#0D0D11]">
-          <div></div>
-          <nav className="flex gap-6 text-sm text-white/80">
-            {/* TODO: add Docs | Pricing | GitHub later */}
-          </nav>
+        <header className="sticky top-0 z-40 border-b border-[#1DEE7F]/15 bg-[#0D0D11]/95 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:py-5">
+            <Link
+              href="/"
+              className="flex shrink-0 items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1DEE7F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D11] rounded"
+              aria-label="FileSlap home"
+            >
+              <Image
+                src="/assets/fileslap-logo.png"
+                alt="FileSlap"
+                width={520}
+                height={130}
+                className="h-11 w-auto sm:h-14 md:h-16"
+                priority
+                unoptimized
+              />
+            </Link>
+            <nav
+              className="flex items-center gap-3 sm:gap-4"
+              aria-label="Primary"
+            >
+              <Link
+                href="/docs"
+                className="text-sm font-medium text-white/75 transition-colors hover:text-[#1DEE7F] sm:text-base"
+              >
+                Docs
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-full bg-[#1DEE7F] px-4 py-2 text-sm font-semibold text-[#0D0D11] transition hover:brightness-110 sm:px-5"
+              >
+                Get API Key
+              </Link>
+            </nav>
+          </div>
         </header>
         
-        <div className="flex-1">
+        <div className="flex-1 pb-16 sm:pb-20">
           {children}
         </div>
         
