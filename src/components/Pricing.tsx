@@ -36,7 +36,7 @@ export default function Pricing() {
       per: "/month",
       highlighted: true,
       features: [
-        "2 000 pages / mo",
+        "2,000 pages / mo",
         "Overage $0.002 / page",
       ],
       action: {
@@ -49,7 +49,7 @@ export default function Pricing() {
       price: "$29",
       per: "/month",
       features: [
-        "12 000 pages / mo",
+        "12,000 pages / mo",
         "Overage $0.002 / page",
       ],
       action: {
