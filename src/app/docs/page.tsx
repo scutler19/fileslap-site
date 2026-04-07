@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import IntegrationGuides from '@/components/IntegrationGuides';
 import { Metadata } from 'next';
+import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'API Documentation | FileSlap',
@@ -21,17 +22,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'FileSlap API Documentation | HTML to PDF Conversion',
     description: 'Complete FileSlap API documentation. Learn how to convert HTML to PDF with our REST API. Code examples in cURL, Node.js, Python, and JavaScript.',
-    url: 'https://fileslap.com/docs',
+    url: absoluteUrl('/docs'),
     siteName: 'FileSlap',
     type: 'website',
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: 'FileSlap API' }],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'FileSlap API Documentation | HTML to PDF Conversion',
     description: 'Complete FileSlap API documentation with code examples.',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: {
-    canonical: 'https://fileslap.com/docs',
+    canonical: absoluteUrl('/docs'),
   },
 };
 
@@ -157,7 +160,7 @@ window.URL.revokeObjectURL(url);`}
 
       <div className="mt-8 flex flex-wrap gap-4">
         <Link
-          href="/#pricing"
+          href="/pricing"
           className="rounded-full bg-[#1DEE7F] px-6 py-3 font-medium text-[#0D0D11] hover:brightness-110 transition"
         >
           View Pricing

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/success', '/cancel', '/subscribe'],
     },
-    sitemap: 'https://fileslap.com/sitemap.xml',
+    sitemap: 'https://www.fileslap.com/sitemap.xml',
   }
 } 

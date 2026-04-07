@@ -1,6 +1,7 @@
 /* src/app/contact/page.tsx */
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Contact Us | FileSlap',
@@ -17,17 +18,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Contact FileSlap | Enterprise Pricing & Support',
     description: 'Contact FileSlap for enterprise pricing, technical support, or questions about our HTML to PDF conversion API.',
-    url: 'https://fileslap.com/contact',
+    url: absoluteUrl('/contact'),
     siteName: 'FileSlap',
     type: 'website',
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: 'FileSlap' }],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Contact FileSlap | Enterprise Pricing & Support',
     description: 'Contact FileSlap for enterprise pricing and technical support.',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: {
-    canonical: 'https://fileslap.com/contact',
+    canonical: absoluteUrl('/contact'),
   },
 };
 
@@ -84,7 +87,7 @@ export default function ContactPage() {
 
       <div className="mt-8 text-center">
         <Link
-          href="/#pricing"
+          href="/pricing"
           className="text-[#1DEE7F] hover:underline"
         >
           ← Back to Pricing

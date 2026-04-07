@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Security & Privacy | FileSlap',
@@ -7,12 +8,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Security & Privacy | FileSlap',
     description: 'Learn about FileSlap security measures: TLS-only connections, in-memory processing, and automatic PDF purging.',
-    url: 'https://www.fileslap.com/docs/security',
+    url: absoluteUrl('/docs/security'),
     siteName: 'FileSlap',
     type: 'website',
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: 'FileSlap' }],
   },
   alternates: {
-    canonical: 'https://www.fileslap.com/docs/security',
+    canonical: absoluteUrl('/docs/security'),
   },
 };
 

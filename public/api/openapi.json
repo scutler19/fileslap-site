@@ -7,7 +7,7 @@
     "contact": {
       "name": "FileSlap Support",
       "email": "stackdaddy.dev@gmail.com",
-      "url": "https://fileslap.com/contact"
+      "url": "https://www.fileslap.com/contact"
     },
     "license": {
       "name": "MIT",
@@ -139,7 +139,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "X-API-KEY",
-        "description": "Your FileSlap API key. Get one at https://fileslap.com/signup"
+        "description": "Your FileSlap API key. Get one at https://www.fileslap.com/signup"
       }
     },
     "schemas": {

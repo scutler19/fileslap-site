@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import InvoiceTemplateGenerator from "@/components/InvoiceTemplateGenerator";
+import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Free Invoice Template Generator",
@@ -9,12 +10,20 @@ export const metadata: Metadata = {
     title: "Free Invoice Template Generator | FileSlap",
     description:
       "Modern, minimal, and corporate invoice templates. Download pixel-perfect PDFs powered by FileSlap.",
-    url: "https://www.fileslap.com/templates",
+    url: absoluteUrl("/templates"),
     siteName: "FileSlap",
     type: "website",
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: "FileSlap invoice templates",
+      },
+    ],
   },
   alternates: {
-    canonical: "https://www.fileslap.com/templates",
+    canonical: absoluteUrl("/templates"),
   },
 };
 

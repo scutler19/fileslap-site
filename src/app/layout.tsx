@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter, Roboto_Mono } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
+import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -15,7 +16,7 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.fileslap.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'FileSlap · HTML-to-PDF API for Developers',
     template: '%s | FileSlap',
@@ -24,11 +25,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'FileSlap · HTML-to-PDF API for Developers',
     description: 'Instant HTML-to-PDF conversion API. Free 50 pages/month.',
-    url: 'https://www.fileslap.com/',
+    url: absoluteUrl('/'),
     siteName: 'FileSlap',
     images: [
       {
-        url: '/og-cover.png',
+        url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
         alt: 'FileSlap HTML-to-PDF API',
@@ -41,11 +42,11 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'FileSlap · HTML-to-PDF API for Developers',
     description: 'Instant HTML-to-PDF conversion API. Free 50 pages/month.',
-    images: ['/og-cover.png'],
+    images: [DEFAULT_OG_IMAGE],
     site: '@fileslap',
   },
   alternates: {
-    canonical: 'https://www.fileslap.com/',
+    canonical: absoluteUrl('/'),
   },
 };
 
@@ -90,7 +91,7 @@ export default function RootLayout({
               "@type": "SoftwareApplication",
               "name": "FileSlap",
               "description": "Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds.",
-              "url": "https://fileslap.com",
+              "url": SITE_URL,
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Web",
               "offers": {
@@ -102,7 +103,7 @@ export default function RootLayout({
               "provider": {
                 "@type": "Organization",
                 "name": "FileSlap",
-                "url": "https://fileslap.com"
+                "url": SITE_URL
               },
               "featureList": [
                 "HTML to PDF conversion",
@@ -123,8 +124,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "FileSlap",
-              "url": "https://fileslap.com",
-              "logo": "https://fileslap.com/assets/fileslap-logo.png",
+              "url": SITE_URL,
+              "logo": absoluteUrl("/assets/fileslap-logo.png"),
               "description": "HTML to PDF conversion API service",
               "sameAs": [
                 "https://twitter.com/fileslap",
@@ -173,6 +174,12 @@ export default function RootLayout({
                 Docs
               </Link>
               <Link
+                href="/pricing"
+                className="text-sm font-medium text-white/75 transition-colors hover:text-[#1DEE7F] sm:text-base"
+              >
+                Pricing
+              </Link>
+              <Link
                 href="/signup"
                 className="rounded-full bg-[#1DEE7F] px-4 py-2 text-sm font-semibold text-[#0D0D11] transition hover:brightness-110 sm:px-5"
               >
@@ -188,9 +195,12 @@ export default function RootLayout({
         
         <footer className="border-t border-[#1DEE7F]/20 bg-[#0D0D11] px-6 py-8">
           <div className="max-w-6xl mx-auto">
-            <nav className="flex justify-center gap-6 text-sm">
+            <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
               <Link href="/docs" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
                 Documentation
+              </Link>
+              <Link href="/pricing" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
+                Pricing
               </Link>
               <Link href="/docs/security" className="text-white/60 hover:text-[#1DEE7F] transition-colors">
                 Security & Privacy

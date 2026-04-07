@@ -1,6 +1,16 @@
 /* src/app/subscribe/page.tsx */
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import SubscribeClient from './SubscribeClient';
+import { absoluteUrl } from '@/lib/site';
+
+export const metadata: Metadata = {
+  title: 'Subscribe',
+  description:
+    'Subscribe to FileSlap Starter or Pro for higher HTML-to-PDF volume. Manage billing from your account.',
+  alternates: { canonical: absoluteUrl('/subscribe') },
+  robots: { index: false, follow: false },
+};
 
 export default function SubscribePage() {
   return (

@@ -2,6 +2,7 @@
 import SignupForm from '@/components/SignupForm';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Get Free API Key | FileSlap',
@@ -18,17 +19,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Get Your Free FileSlap API Key | HTML to PDF Conversion',
     description: 'Get your free FileSlap API key and start converting HTML to PDF instantly. Free tier includes 50 pages per month.',
-    url: 'https://fileslap.com/signup',
+    url: absoluteUrl('/signup'),
     siteName: 'FileSlap',
     type: 'website',
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: 'FileSlap' }],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Get Your Free FileSlap API Key | HTML to PDF Conversion',
     description: 'Get your free FileSlap API key and start converting HTML to PDF instantly.',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: {
-    canonical: 'https://fileslap.com/signup',
+    canonical: absoluteUrl('/signup'),
   },
 };
 
