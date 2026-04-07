@@ -103,8 +103,8 @@ export default function TermsOfService() {
           <h2 className="text-2xl font-semibold text-[#1DEE7F] mb-4">11. Contact</h2>
           <p className="text-white/80 mb-4">
             If you have any questions about these Terms, please contact us at{' '}
-            <a href="mailto:ghost.exitcodezer0@proton.me" className="text-[#1DEE7F] hover:underline">
-              ghost.exitcodezer0@proton.me
+            <a href="mailto:stackdaddy.dev@gmail.com" className="text-[#1DEE7F] hover:underline">
+              stackdaddy.dev@gmail.com
             </a>
           </p>
         </section>

@@ -38,7 +38,9 @@ export const metadata: Metadata = {
 export default function Docs() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
-      <h1 className="mb-6 text-4xl font-bold text-white">FileSlap API Quick Start</h1>
+      <h1 id="quick-start" className="mb-6 text-4xl font-bold text-white scroll-mt-24">
+        FileSlap API Quick Start
+      </h1>
 
       <p className="mb-8 text-lg text-white/80">
         Convert HTML to a PDF in a single request. All requests require a valid API key.
@@ -53,7 +55,9 @@ export default function Docs() {
   --output hello.pdf`}
       </pre>
 
-      <h2 className="mb-4 text-2xl font-semibold text-white">Node.js</h2>
+      <h2 id="nodejs" className="mb-4 text-2xl font-semibold text-white scroll-mt-24">
+        Node.js
+      </h2>
       <pre className="mb-8 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
 {`import fetch from "node-fetch";
 import fs from "fs";
@@ -75,7 +79,9 @@ const buffer = await res.arrayBuffer();
 fs.writeFileSync("hello.pdf", Buffer.from(buffer));`}
       </pre>
 
-      <h2 className="mb-4 text-2xl font-semibold text-white">Python</h2>
+      <h2 id="python" className="mb-4 text-2xl font-semibold text-white scroll-mt-24">
+        Python
+      </h2>
       <pre className="mb-8 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
 {`import requests
 
@@ -95,7 +101,9 @@ else:
     print(f"Error: {response.status_code}")`}
       </pre>
 
-      <h2 className="mb-4 text-2xl font-semibold text-white">JavaScript (Browser)</h2>
+      <h2 id="javascript" className="mb-4 text-2xl font-semibold text-white scroll-mt-24">
+        JavaScript (Browser)
+      </h2>
       <pre className="mb-8 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
 {`const response = await fetch("https://api.fileslap.com/api/convert", {
   method: "POST",
@@ -155,7 +163,7 @@ window.URL.revokeObjectURL(url);`}
           View Pricing
         </Link>
         <Link
-          href="mailto:ghost.exitcodezer0@proton.me"
+          href="mailto:stackdaddy.dev@gmail.com"
           className="rounded-full border border-[#1DEE7F] px-6 py-3 font-medium text-white hover:bg-[#1DEE7F]/10 transition"
         >
           Contact Support

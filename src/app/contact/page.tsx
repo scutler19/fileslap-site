@@ -75,10 +75,10 @@ export default function ContactPage() {
           Send us an email and we&apos;ll get back to you within 24 hours.
         </p>
         <a
-          href="mailto:ghost.exitcodezer0@proton.me"
+          href="mailto:stackdaddy.dev@gmail.com"
           className="inline-block rounded-full bg-[#1DEE7F] px-8 py-3 font-medium text-[#0D0D11] hover:brightness-110 transition"
         >
-          Email Support
+          stackdaddy.dev@gmail.com
         </a>
       </div>
 

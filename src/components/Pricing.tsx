@@ -110,7 +110,10 @@ export default function Pricing() {
       </div>
 
       <p className="mt-8 sm:mt-12 text-center text-xs sm:text-sm text-white/60">
-        Need higher volume? <a href="mailto:ghost.exitcodezer0@proton.me" className="underline hover:text-[#1DEE7F] transition-colors">Contact us</a>.
+        Need higher volume?{' '}
+        <a href="mailto:stackdaddy.dev@gmail.com" className="underline hover:text-[#1DEE7F] transition-colors">
+          Contact us
+        </a>.
       </p>
     </section>
   );

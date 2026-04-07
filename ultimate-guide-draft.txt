@@ -23,7 +23,7 @@ We've created comprehensive guides for every major platform and use case. Each g
 
 ### 🚀 **Backend Development**
 
-#### [Node.js Integration Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-node-js-a-complete-guide-to-using-the-fileslap-api)
+#### [Node.js Integration Guide](https://fileslap.com/docs#nodejs)
 *Perfect for server-side applications and APIs*
 
 **What you'll learn:**
@@ -36,7 +36,7 @@ We've created comprehensive guides for every major platform and use case. Each g
 
 **Perfect for:** E-commerce platforms, SaaS applications, backend APIs
 
-#### [Python Integration Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-python-a-complete-guide-to-using-the-fileslap-api)
+#### [Python Integration Guide](https://fileslap.com/docs#python)
 *Ideal for data science, automation, and web applications*
 
 **What you'll learn:**
@@ -51,7 +51,7 @@ We've created comprehensive guides for every major platform and use case. Each g
 
 ### 🎨 **Frontend Development**
 
-#### [React Integration Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-react-a-complete-guide-to-using-the-fileslap-api)
+#### [React Integration Guide](https://fileslap.com/docs#javascript)
 *Transform React components into downloadable PDFs*
 
 **What you'll learn:**
@@ -66,7 +66,7 @@ We've created comprehensive guides for every major platform and use case. Each g
 
 ### 🔧 **No-Code Automation**
 
-#### [Zapier Integration Guide](https://exitcodezer0.beehiiv.com/p/automate-pdf-generation-with-zapier-and-fileslap-api)
+#### [Zapier Integration Guide](https://fileslap.com/docs#integration-guides)
 *Automate PDF generation without writing code*
 
 **What you'll learn:**
@@ -79,7 +79,7 @@ We've created comprehensive guides for every major platform and use case. Each g
 
 **Perfect for:** Business automation, marketing workflows, customer service
 
-#### [Make.com Integration Guide](https://exitcodezer0.beehiiv.com/p/automate-pdf-generation-with-make-com-and-fileslap-api)
+#### [Make.com Integration Guide](https://fileslap.com/docs#integration-guides)
 *Advanced automation with visual workflow builder*
 
 **What you'll learn:**
@@ -92,7 +92,7 @@ We've created comprehensive guides for every major platform and use case. Each g
 
 **Perfect for:** Complex business processes, multi-platform integrations
 
-#### [n8n Integration Guide](https://exitcodezer0.beehiiv.com/p/build-powerful-pdf-workflows-with-n8n-and-fileslap-api)
+#### [n8n Integration Guide](https://fileslap.com/docs#integration-guides)
 *Self-hosted automation with unlimited flexibility*
 
 **What you'll learn:**
@@ -107,7 +107,7 @@ We've created comprehensive guides for every major platform and use case. Each g
 
 ### 🏢 **Google Workspace**
 
-#### [Google Apps Script Integration Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-google-apps-script-and-fileslap-api)
+#### [Google Apps Script Integration Guide](https://fileslap.com/docs#integration-guides)
 *Automate PDF generation within Google Workspace*
 
 **What you'll learn:**
@@ -290,19 +290,19 @@ Most applications use 1-100 conversions per day, making the free tier perfect fo
 Ready to transform your HTML content into professional PDFs? Choose your platform and dive into the complete integration guide:
 
 ### **Backend Development**
-- [Node.js Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-node-js-a-complete-guide-to-using-the-fileslap-api)
-- [Python Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-python-a-complete-guide-to-using-the-fileslap-api)
+- [Node.js Guide](https://fileslap.com/docs#nodejs)
+- [Python Guide](https://fileslap.com/docs#python)
 
 ### **Frontend Development**
-- [React Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-react-a-complete-guide-to-using-the-fileslap-api)
+- [React Guide](https://fileslap.com/docs#javascript)
 
 ### **No-Code Automation**
-- [Zapier Guide](https://exitcodezer0.beehiiv.com/p/automate-pdf-generation-with-zapier-and-fileslap-api)
-- [Make.com Guide](https://exitcodezer0.beehiiv.com/p/automate-pdf-generation-with-make-com-and-fileslap-api)
-- [n8n Guide](https://exitcodezer0.beehiiv.com/p/build-powerful-pdf-workflows-with-n8n-and-fileslap-api)
+- [Zapier Guide](https://fileslap.com/docs#integration-guides)
+- [Make.com Guide](https://fileslap.com/docs#integration-guides)
+- [n8n Guide](https://fileslap.com/docs#integration-guides)
 
 ### **Google Workspace**
-- [Google Apps Script Guide](https://exitcodezer0.beehiiv.com/p/convert-html-to-pdf-with-google-apps-script-and-fileslap-api)
+- [Google Apps Script Guide](https://fileslap.com/docs#integration-guides)
 
 ---
 
