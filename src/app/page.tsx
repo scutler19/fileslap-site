@@ -1,6 +1,7 @@
 /* src/app/page.tsx */
 import CodeSnippets from "@/components/CodeSnippets";
 import Features from "@/components/Features";
+import Capabilities from "@/components/Capabilities";
 import Pricing from "@/components/Pricing";
 import HtmlToPdfDemo from "@/components/HtmlToPdfDemo";
 import UseCases from "@/components/UseCases";
@@ -12,25 +13,24 @@ import type { Metadata } from "next";
 import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "HTML to PDF API | Convert Web Pages to PDF Instantly",
+  title: "HTML to PDF API | A4, Letter, Landscape, Margins & Delayed Render",
   description:
-    "Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds. Free tier includes 50 pages/month. Simple, reliable, and secure.",
+    "HTML to PDF API for developers: A4 and Letter, landscape, custom margins, print backgrounds, optional delay for JS-rendered pages. Fast, simple REST. Free tier available.",
   keywords: [
-    "HTML to PDF",
+    "HTML to PDF API",
+    "A4 HTML to PDF",
+    "landscape HTML to PDF",
+    "HTML to PDF custom margins",
+    "HTML to PDF JavaScript rendered",
     "PDF conversion API",
     "web to PDF",
-    "document conversion",
-    "PDF generation",
     "HTML PDF converter",
-    "web page to PDF",
-    "PDF API service",
-    "document API",
     "FileSlap",
   ],
   openGraph: {
-    title: "FileSlap – HTML to PDF API | Convert Web Pages to PDF Instantly",
+    title: "FileSlap – HTML to PDF API | Layout, margins & delayed rendering",
     description:
-      "Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds. Free tier includes 50 pages/month.",
+      "Convert HTML to PDF via REST: page sizes, landscape, margins, print backgrounds, optional delay for client-rendered content. Free tier available.",
     url: absoluteUrl("/"),
     siteName: "FileSlap",
     images: [
@@ -46,9 +46,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FileSlap – HTML to PDF API | Convert Web Pages to PDF Instantly",
+    title: "FileSlap – HTML to PDF API | Layout, margins & delayed rendering",
     description:
-      "Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds. Free tier includes 50 pages/month.",
+      "REST API for HTML to PDF: A4/Letter, landscape, margins, backgrounds, optional JS delay. Free tier available.",
     images: [DEFAULT_OG_IMAGE],
   },
   alternates: {
@@ -61,7 +61,8 @@ const websiteJsonLd = {
   "@type": "WebSite",
   name: "FileSlap",
   url: SITE_URL,
-  description: "Convert HTML to PDF with our lightning-fast API",
+  description:
+    "HTML to PDF API with optional layout controls, print-style rendering, and delayed capture for dynamic pages.",
 };
 
 export default function Home() {
@@ -95,9 +96,14 @@ export default function Home() {
           &nbsp;directly&nbsp;to&nbsp;PDF.
         </h1>
 
-        <p className="max-w-3xl text-base sm:text-lg lg:text-xl xl:text-2xl text-white/80 mb-8 sm:mb-12 leading-relaxed">
+        <p className="max-w-3xl text-base sm:text-lg lg:text-xl xl:text-2xl text-white/80 mb-6 sm:mb-8 leading-relaxed">
           One lightweight API that turns web pages&nbsp;→&nbsp;pixel-perfect PDFs&nbsp;
           in&nbsp;seconds. Your first&nbsp;50&nbsp;pages each month are&nbsp;free.
+        </p>
+
+        <p className="max-w-2xl mx-auto text-sm sm:text-base text-white/65 mb-8 sm:mb-10 leading-relaxed">
+          A4 and Letter, landscape, custom margins, print backgrounds, and an optional delay for
+          JS-heavy pages—when you need more than a plain HTML dump.
         </p>
 
         <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -133,6 +139,7 @@ export default function Home() {
         Get API Key
       </a>
       <Features />
+      <Capabilities />
       <UseCases />
       <HtmlToPdfDemo />
       <CodeSnippets />
@@ -168,7 +175,7 @@ export default function Home() {
                 name: "Is my HTML or PDF data stored?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "No. FileSlap processes all conversions in-memory and does not retain your HTML or generated PDFs.",
+                  text: "We do not keep your HTML or PDFs for long-term access. PDFs exist only briefly for delivery and are removed automatically; see our security page for details.",
                 },
               },
               {

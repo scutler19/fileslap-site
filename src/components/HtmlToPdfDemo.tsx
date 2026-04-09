@@ -386,8 +386,62 @@ const EXAMPLES = [
   }
 ];
 
+function buildDemoPayload(
+  html: string,
+  opts: {
+    format: string;
+    landscape: boolean;
+    marginTop: string;
+    marginRight: string;
+    marginBottom: string;
+    marginLeft: string;
+    delayMs: string;
+    filename: string;
+  }
+): Record<string, unknown> {
+  const body: Record<string, unknown> = { html };
+  if (opts.format.trim()) body.format = opts.format.trim();
+  if (opts.landscape) body.landscape = true;
+  const mt = opts.marginTop.trim();
+  const mr = opts.marginRight.trim();
+  const mb = opts.marginBottom.trim();
+  const ml = opts.marginLeft.trim();
+  if (mt) body.marginTop = /^\d+(\.\d+)?$/.test(mt) ? Number(mt) : mt;
+  if (mr) body.marginRight = /^\d+(\.\d+)?$/.test(mr) ? Number(mr) : mr;
+  if (mb) body.marginBottom = /^\d+(\.\d+)?$/.test(mb) ? Number(mb) : mb;
+  if (ml) body.marginLeft = /^\d+(\.\d+)?$/.test(ml) ? Number(ml) : ml;
+  const d = opts.delayMs.trim();
+  if (d) {
+    const n = Math.floor(Number(d));
+    if (Number.isFinite(n) && n >= 0) {
+      body.delayMs = Math.min(10_000, n);
+    }
+  }
+  const fn = opts.filename.trim();
+  if (fn) body.filename = fn.slice(0, 200);
+  return body;
+}
+
+function downloadNameFromFilename(filename: string): string {
+  const t = filename.trim();
+  if (!t) return "fileslap-demo.pdf";
+  const base = t
+    .replace(/\.pdf$/i, "")
+    .replace(/[^a-zA-Z0-9-_]/g, "")
+    .slice(0, 120);
+  return base ? `${base}.pdf` : "fileslap-demo.pdf";
+}
+
 export default function HtmlToPdfDemo() {
   const [html, setHtml] = useState("<h1>Hello FileSlap</h1>");
+  const [format, setFormat] = useState("A4");
+  const [landscape, setLandscape] = useState(false);
+  const [marginTop, setMarginTop] = useState("");
+  const [marginRight, setMarginRight] = useState("");
+  const [marginBottom, setMarginBottom] = useState("");
+  const [marginLeft, setMarginLeft] = useState("");
+  const [delayMs, setDelayMs] = useState("");
+  const [filename, setFilename] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
@@ -432,10 +486,20 @@ export default function HtmlToPdfDemo() {
     setLoading(true);
     setError(null);
     try {
+      const payload = buildDemoPayload(html, {
+        format,
+        landscape,
+        marginTop,
+        marginRight,
+        marginBottom,
+        marginLeft,
+        delayMs,
+        filename,
+      });
       const res = await fetch("/api/demo-convert", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html }),
+        body: JSON.stringify(payload),
       });
       
       // Update remaining attempts from response header
@@ -482,7 +546,8 @@ export default function HtmlToPdfDemo() {
           Try It Now
         </h2>
         <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto mb-4 sm:mb-6">
-          Test the API right now. Paste your HTML below and convert it to PDF instantly.
+          Test the API right now. Paste HTML below; expand advanced options to try layout and timing
+          fields the API accepts.
         </p>
         
         {/* Daily Usage Counter */}
@@ -521,6 +586,96 @@ export default function HtmlToPdfDemo() {
           ))}
         </div>
       </div>
+
+      <details className="mt-6 sm:mt-8 rounded-xl border border-[#1DEE7F]/20 bg-[#111217]/80 px-4 py-3 sm:px-5 sm:py-4 text-left max-w-5xl mx-auto">
+        <summary className="cursor-pointer text-sm sm:text-base font-medium text-[#1DEE7F] select-none">
+          Advanced options
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">format</span>
+            <select
+              value={format}
+              onChange={(e) => setFormat(e.target.value)}
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
+            >
+              <option value="A4">A4</option>
+              <option value="Letter">Letter</option>
+            </select>
+          </label>
+          <label className="flex items-center gap-3 sm:col-span-2 lg:col-span-1 text-sm text-white/90 pt-6 sm:pt-8">
+            <input
+              type="checkbox"
+              checked={landscape}
+              onChange={(e) => setLandscape(e.target.checked)}
+              className="h-4 w-4 rounded border-[#1DEE7F]/40 text-[#1DEE7F] focus:ring-[#1DEE7F]"
+            />
+            landscape
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">marginTop</span>
+            <input
+              type="text"
+              value={marginTop}
+              onChange={(e) => setMarginTop(e.target.value)}
+              placeholder="e.g. 20 or 0.5in"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">marginRight</span>
+            <input
+              type="text"
+              value={marginRight}
+              onChange={(e) => setMarginRight(e.target.value)}
+              placeholder="optional"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">marginBottom</span>
+            <input
+              type="text"
+              value={marginBottom}
+              onChange={(e) => setMarginBottom(e.target.value)}
+              placeholder="optional"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">marginLeft</span>
+            <input
+              type="text"
+              value={marginLeft}
+              onChange={(e) => setMarginLeft(e.target.value)}
+              placeholder="optional"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">delayMs (0–10000)</span>
+            <input
+              type="number"
+              min={0}
+              max={10_000}
+              value={delayMs}
+              onChange={(e) => setDelayMs(e.target.value)}
+              placeholder="wait before PDF"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70 sm:col-span-2">
+            <span className="block mb-1 text-white/90">filename (optional, .pdf added server-side)</span>
+            <input
+              type="text"
+              value={filename}
+              onChange={(e) => setFilename(e.target.value)}
+              placeholder="invoice-acme"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+        </div>
+      </details>
 
       {error && (
           <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 mt-4 sm:mt-6">
@@ -580,7 +735,7 @@ export default function HtmlToPdfDemo() {
                   onClick={() => {
                     const a = document.createElement("a");
                     a.href = previewUrl;
-                    a.download = "fileslap-demo.pdf";
+                    a.download = downloadNameFromFilename(filename);
                     a.click();
                   }}
                   className="rounded-full bg-[#1DEE7F] px-4 sm:px-6 py-2 sm:py-3 font-medium text-[#0D0D11] hover:brightness-110 transition text-sm sm:text-base"

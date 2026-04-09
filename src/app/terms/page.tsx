@@ -56,8 +56,11 @@ export default function TermsOfService() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-[#1DEE7F] mb-4">5. Privacy and Data</h2>
           <p className="text-white/80 mb-4">
-            We process your HTML content and generated PDFs in-memory only. We do not store, retain, or access your content after processing. 
-            See our <Link href="/privacy" className="text-[#1DEE7F] hover:underline">Privacy Policy</Link> for more details.
+            Your HTML is processed to complete the conversion request. PDF files may be stored temporarily during
+            processing or delivery. The service is not intended as a long-term document storage service. Operational
+            logs and usage data may be retained. For details, see our{" "}
+            <Link href="/privacy" className="text-[#1DEE7F] hover:underline">Privacy Policy</Link> and{" "}
+            <Link href="/docs/security" className="text-[#1DEE7F] hover:underline">Security & Privacy</Link> page.
           </p>
         </section>
 

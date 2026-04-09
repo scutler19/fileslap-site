@@ -17,7 +17,7 @@ const features = [
       </svg>
     ),
     title: "Secure",
-    blurb: "TLS-only endpoints and zero HTML retained.",
+    blurb: "TLS-only endpoints; content is not kept for long-term access after conversion.",
   },
   {
     icon: (

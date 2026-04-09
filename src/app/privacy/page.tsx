@@ -32,14 +32,10 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-[#1DEE7F] mb-4">2. How We Process Your Content</h2>
           <p className="text-white/80 mb-4">
-            <strong>Important:</strong> We process your HTML content and generated PDFs in-memory only. This means:
+            <strong>Important:</strong> Your HTML is processed to complete the conversion request. PDF files may be
+            stored temporarily during processing or delivery. The service is not intended as a long-term document
+            storage service—we do not offer a vault or archive for you to fetch old HTML or PDFs from us later.
           </p>
-          <ul className="text-white/80 mb-4 space-y-2">
-            <li>• Your HTML content is never stored on our servers</li>
-            <li>• Generated PDFs are not retained after delivery</li>
-            <li>• All processing happens in temporary memory and is immediately purged</li>
-            <li>• We cannot access, read, or recover your content after processing</li>
-          </ul>
         </section>
 
         <section className="mb-8">
@@ -69,24 +65,28 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-[#1DEE7F] mb-4">5. Data Security</h2>
           <p className="text-white/80 mb-4">
-            We implement appropriate security measures to protect your information:
+            We use reasonable measures to protect information we handle, including:
           </p>
           <ul className="text-white/80 mb-4 space-y-2">
-            <li>• TLS encryption for all data transmission</li>
-            <li>• Secure API key management</li>
-            <li>• Regular security audits and updates</li>
-            <li>• In-memory processing prevents data persistence</li>
+            <li>• HTTPS for traffic to our website and API</li>
+            <li>• API keys for authenticated access</li>
+            <li>• Temporary handling of generated PDFs as described in section 2 and our <Link href="/docs/security" className="text-[#1DEE7F] hover:underline">Security & Privacy</Link> page</li>
           </ul>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-[#1DEE7F] mb-4">6. Data Retention</h2>
           <p className="text-white/80 mb-4">
-            <strong>Content Data:</strong> Your HTML content and generated PDFs are never stored or retained.
+            <strong>Content from conversions:</strong> HTML is processed to complete each request. PDF files may be stored
+            temporarily during processing or delivery, then removed on a schedule. See section 2.
           </p>
           <p className="text-white/80 mb-4">
-            <strong>Account Data:</strong> We retain account information and usage logs for as long as your account is active, 
-            plus a reasonable period for legal and business purposes.
+            <strong>Operational logs and usage data:</strong> Operational logs and usage data may be retained to operate the
+            service, enforce limits, and fix problems.
+          </p>
+          <p className="text-white/80 mb-4">
+            <strong>Account Data:</strong> We retain account information for as long as your account is active, plus a
+            reasonable period for legal and ordinary business purposes.
           </p>
         </section>
 
@@ -117,8 +117,8 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-[#1DEE7F] mb-4">9. International Data Transfers</h2>
           <p className="text-white/80 mb-4">
-            FileSlap operates globally. Your information may be processed in countries other than your own. 
-            We ensure appropriate safeguards are in place for international data transfers.
+            Our providers and infrastructure may process data in various countries. If you have questions about where
+            data is handled, contact us.
           </p>
         </section>
 

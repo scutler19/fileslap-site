@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "FileSlap API",
-    "description": "Convert HTML to PDF with our lightning-fast API. Turn web pages into pixel-perfect PDFs in seconds.",
+    "description": "Convert HTML to PDF over HTTPS. Send HTML plus optional layout and timing fields (format, landscape, margins, delayMs, filename). The response is the PDF binary.",
     "version": "1.0.0",
     "contact": {
       "name": "FileSlap Support",
@@ -24,7 +24,7 @@
     "/api/convert": {
       "post": {
         "summary": "Convert HTML to PDF",
-        "description": "Convert HTML content to a PDF file. The API returns the PDF directly as a binary response.",
+        "description": "Convert HTML content to a PDF. Required field: `html`. Optional: `format` (e.g. A4, Letter), `landscape`, per-side margins, `delayMs` (ms to wait after load, max 10000), and `filename`. Background graphics are included via print-style rendering (not toggled per request). Returns `application/pdf`.",
         "operationId": "convertHtmlToPdf",
         "tags": ["Conversion"],
         "security": [
@@ -50,6 +50,20 @@
                   "summary": "Invoice Template",
                   "value": {
                     "html": "<!DOCTYPE html><html><head><style>body{font-family:Arial,sans-serif;margin:40px;}table{width:100%;border-collapse:collapse;}th,td{padding:8px;text-align:left;border-bottom:1px solid #ddd;}</style></head><body><h1>Invoice</h1><table><tr><th>Item</th><th>Price</th></tr><tr><td>Service</td><td>$100</td></tr></table></body></html>"
+                  }
+                },
+                "layoutAndDelay": {
+                  "summary": "Letter, landscape, margins, delay, filename",
+                  "value": {
+                    "html": "<html><body><h1>Quarterly summary</h1></body></html>",
+                    "format": "Letter",
+                    "landscape": true,
+                    "marginTop": "0.4in",
+                    "marginRight": "0.4in",
+                    "marginBottom": "0.4in",
+                    "marginLeft": "0.4in",
+                    "delayMs": 500,
+                    "filename": "quarterly-summary"
                   }
                 }
               }
@@ -78,7 +92,7 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid HTML or missing required fields",
+            "description": "Bad request - invalid or unknown fields, or invalid values",
             "content": {
               "application/json": {
                 "schema": {
@@ -149,9 +163,58 @@
         "properties": {
           "html": {
             "type": "string",
-            "description": "The HTML content to convert to PDF",
+            "description": "HTML content to convert to PDF",
             "minLength": 1,
             "example": "<h1>Hello World</h1><p>This is a test document.</p>"
+          },
+          "format": {
+            "type": "string",
+            "description": "Paper format name supported by the PDF engine (e.g. A4, Letter). Defaults to A4 when omitted.",
+            "example": "A4"
+          },
+          "landscape": {
+            "type": "boolean",
+            "description": "Render in landscape orientation when true",
+            "default": false
+          },
+          "marginTop": {
+            "oneOf": [
+              { "type": "number" },
+              { "type": "string" }
+            ],
+            "description": "Top margin (pixels as number, or CSS length string such as 0.5in)"
+          },
+          "marginRight": {
+            "oneOf": [
+              { "type": "number" },
+              { "type": "string" }
+            ],
+            "description": "Right margin"
+          },
+          "marginBottom": {
+            "oneOf": [
+              { "type": "number" },
+              { "type": "string" }
+            ],
+            "description": "Bottom margin"
+          },
+          "marginLeft": {
+            "oneOf": [
+              { "type": "number" },
+              { "type": "string" }
+            ],
+            "description": "Left margin"
+          },
+          "delayMs": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10000,
+            "description": "Milliseconds to wait after page load before PDF capture (for JS-rendered content). Capped at 10000."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Suggested base filename; server may strip unsafe characters",
+            "example": "invoice-2024-04"
           }
         }
       },
@@ -169,7 +232,7 @@
   "tags": [
     {
       "name": "Conversion",
-      "description": "HTML to PDF conversion operations"
+      "description": "HTML to PDF conversion"
     }
   ]
-} 
+}

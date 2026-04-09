@@ -4,11 +4,19 @@ import type { Metadata } from "next";
 import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/site";
 
 const description =
-  "Convert HTML to PDF instantly with FileSlap. Fast, reliable API for developers. Free tier, secure in-memory processing, and simple integration.";
+  "HTML to PDF API: A4 and Letter, landscape, custom margins, print backgrounds, optional delay for JS-rendered pages. Simple REST integration and a free tier.";
 
 export const metadata: Metadata = {
-  title: "HTML 2 PDF | Convert HTML to PDF Instantly",
+  title: "HTML 2 PDF API | A4, Letter, Landscape, Margins & JS Delay",
   description,
+  keywords: [
+    "HTML to PDF API",
+    "A4 HTML to PDF",
+    "landscape HTML to PDF",
+    "HTML to PDF custom margins",
+    "HTML to PDF JavaScript",
+    "FileSlap",
+  ],
   alternates: { canonical: absoluteUrl("/html-2-pdf") },
   openGraph: {
     title: "HTML 2 PDF | FileSlap",
@@ -79,9 +87,9 @@ export default function Html2PdfLanding() {
           HTML 2 PDF Converter
         </h1>
         <p className="text-lg mb-8 text-white/80">
-          Instantly convert HTML to PDF with FileSlap. Our lightning-fast API
-          makes it easy to turn web pages, invoices, reports, and more into
-          pixel-perfect PDFs. No complex setup—just a simple API call.
+          Convert HTML to PDF over HTTPS with one POST: optional page size (A4, Letter), landscape,
+          per-side margins, and a delay for client-rendered content. Built for invoices, reports, and
+          dashboards—not a clunky desktop converter.
         </p>
         <div className="mb-10">
           <Image
@@ -115,13 +123,24 @@ export default function Html2PdfLanding() {
         <h2 className="text-2xl font-semibold mb-4">
           How to Convert HTML to PDF (API Example)
         </h2>
-        <pre className="mb-8 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
+        <pre className="mb-4 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
           {`curl -X POST https://api.fileslap.com/api/convert \\
   -H "Content-Type: application/json" \\
   -H "X-API-KEY: YOUR_API_KEY" \\
   -d '{"html": "<h1>Hello World</h1>"}' \\
   --output hello.pdf`}
         </pre>
+        <p className="mb-8 text-sm text-white/65">
+          Optional JSON fields include{" "}
+          <code className="text-[#A5FFCB]">format</code>,{" "}
+          <code className="text-[#A5FFCB]">landscape</code>, margin sides,{" "}
+          <code className="text-[#A5FFCB]">delayMs</code>, and{" "}
+          <code className="text-[#A5FFCB]">filename</code>. See{" "}
+          <Link href="/docs" className="text-[#1DEE7F] underline">
+            API documentation
+          </Link>{" "}
+          for the full reference and a multi-option cURL example.
+        </p>
         <h2 className="text-2xl font-semibold mb-4">
           Why Choose FileSlap for HTML 2 PDF?
         </h2>
@@ -176,8 +195,12 @@ export default function Html2PdfLanding() {
               </svg>
             </span>
             <span>
-              <strong>Secure:</strong> No HTML or PDF data is stored—everything
-              is processed in-memory.
+              <strong>Secure:</strong> Content is not kept for long-term access; PDFs exist only
+              briefly for delivery. See{" "}
+              <Link href="/docs/security" className="text-[#1DEE7F] underline">
+                Security & Privacy
+              </Link>
+              .
             </span>
           </li>
           <li className="flex items-start gap-3">

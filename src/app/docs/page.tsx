@@ -5,23 +5,24 @@ import { Metadata } from 'next';
 import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'API Documentation | FileSlap',
-  description: 'Complete FileSlap API documentation. Learn how to convert HTML to PDF with our REST API. Code examples in cURL, Node.js, Python, and JavaScript.',
+  title: 'API Documentation | FileSlap HTML to PDF',
+  description:
+    'FileSlap REST API: convert HTML to PDF with optional format (A4, Letter), landscape, per-side margins, delayMs for JS-rendered pages, and filename. Examples in cURL, Node, Python, and JavaScript.',
   keywords: [
     'FileSlap API',
     'HTML to PDF API',
-    'API documentation',
-    'PDF conversion API',
+    'A4 HTML to PDF API',
+    'landscape PDF API',
+    'HTML to PDF margins',
+    'HTML to PDF delay',
     'REST API',
-    'API examples',
-    'cURL examples',
-    'Node.js API',
-    'Python API',
-    'JavaScript API'
+    'cURL HTML to PDF',
+    'API documentation',
   ],
   openGraph: {
-    title: 'FileSlap API Documentation | HTML to PDF Conversion',
-    description: 'Complete FileSlap API documentation. Learn how to convert HTML to PDF with our REST API. Code examples in cURL, Node.js, Python, and JavaScript.',
+    title: 'FileSlap API Docs | HTML to PDF with layout & delay options',
+    description:
+      'REST reference for POST /api/convert: html, format, landscape, margins, delayMs, filename. Code examples and OpenAPI spec.',
     url: absoluteUrl('/docs'),
     siteName: 'FileSlap',
     type: 'website',
@@ -29,8 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FileSlap API Documentation | HTML to PDF Conversion',
-    description: 'Complete FileSlap API documentation with code examples.',
+    title: 'FileSlap API Docs | HTML to PDF options',
+    description: 'Format, landscape, margins, delayMs, and more for HTML-to-PDF conversion.',
     images: [DEFAULT_OG_IMAGE],
   },
   alternates: {
@@ -46,16 +47,38 @@ export default function Docs() {
       </h1>
 
       <p className="mb-8 text-lg text-white/80">
-        Convert HTML to a PDF in a single request. All requests require a valid API key.
+        Convert HTML to a PDF in a single request. All requests require a valid API key. Only{" "}
+        <code className="text-[#A5FFCB]">html</code> is required; everything else is optional.
       </p>
 
       <h2 className="mb-4 text-2xl font-semibold text-white">cURL</h2>
-      <pre className="mb-8 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
+      <pre className="mb-6 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
 {`curl -X POST https://api.fileslap.com/api/convert \\
   -H "Content-Type: application/json" \\
   -H "X-API-KEY: YOUR_API_KEY" \\
   -d '{"html": "<h1>Hello World</h1>"}' \\
   --output hello.pdf`}
+      </pre>
+      <p className="mb-4 text-sm text-white/70">
+        Example with layout, margins, a short post-load wait (for client-rendered content), and a
+        suggested filename:
+      </p>
+      <pre className="mb-8 rounded-lg bg-[#111217] p-6 text-sm text-[#A5FFCB] overflow-x-auto">
+{`curl -X POST https://api.fileslap.com/api/convert \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-KEY: YOUR_API_KEY" \\
+  -d '{
+    "html": "<html><body><h1>Report</h1></body></html>",
+    "format": "Letter",
+    "landscape": true,
+    "marginTop": "0.4in",
+    "marginRight": "0.4in",
+    "marginBottom": "0.4in",
+    "marginLeft": "0.4in",
+    "delayMs": 500,
+    "filename": "monthly-report"
+  }' \\
+  --output report.pdf`}
       </pre>
 
       <h2 id="nodejs" className="mb-4 text-2xl font-semibold text-white scroll-mt-24">
@@ -145,17 +168,76 @@ window.URL.revokeObjectURL(url);`}
             </ul>
           </div>
           <div>
-            <strong className="text-white">Request Body:</strong>
-            <pre className="mt-2 p-3 bg-[#0D0D11] rounded text-[#A5FFCB]">
-{`{
-  "html": "<h1>Your HTML content</h1>"
-}`}
-            </pre>
+            <strong className="text-white">Request body (JSON)</strong>
+            <p className="mt-2 text-white/70">
+              All fields below are optional except <code className="text-[#A5FFCB]">html</code>.
+              Invalid values return <code className="text-[#A5FFCB]">400</code> with a short error
+              message.
+            </p>
+            <ul className="mt-3 ml-4 space-y-2 list-none">
+              <li>
+                • <code className="text-[#A5FFCB]">html</code> (string, required) — HTML document to
+                render.
+              </li>
+              <li>
+                • <code className="text-[#A5FFCB]">format</code> (string, optional) — Paper size name
+                understood by the renderer (for example <code className="text-[#A5FFCB]">A4</code>,{" "}
+                <code className="text-[#A5FFCB]">Letter</code>). Default when omitted is{" "}
+                <code className="text-[#A5FFCB]">A4</code>.
+              </li>
+              <li>
+                • <code className="text-[#A5FFCB]">landscape</code> (boolean, optional) — When{" "}
+                <code className="text-[#A5FFCB]">true</code>, renders in landscape orientation.
+              </li>
+              <li>
+                • <code className="text-[#A5FFCB]">marginTop</code>,{" "}
+                <code className="text-[#A5FFCB]">marginRight</code>,{" "}
+                <code className="text-[#A5FFCB]">marginBottom</code>,{" "}
+                <code className="text-[#A5FFCB]">marginLeft</code> (number or string, optional) —
+                Per-side margin. Numbers are interpreted as pixels; strings can include units (for
+                example <code className="text-[#A5FFCB]">&quot;0.5in&quot;</code>). If you omit margins,
+                the service uses its default margin preset.
+              </li>
+              <li>
+                • <code className="text-[#A5FFCB]">delayMs</code> (number, optional) — Milliseconds to
+                wait after load before generating the PDF (useful for JS-rendered content). Capped at
+                10&nbsp;000.
+              </li>
+              <li>
+                • <code className="text-[#A5FFCB]">filename</code> (string, optional) — Base name for
+                the generated file; non-alphanumeric characters are stripped server-side.
+              </li>
+            </ul>
+            <p className="mt-3 text-white/65">
+              Background colors and images are included in the PDF using print-style rendering. There
+              is no separate request flag for backgrounds.
+            </p>
           </div>
           <div>
-            <strong className="text-white">Response:</strong> PDF file (application/pdf)
+            <strong className="text-white">Response:</strong> PDF file (<code className="text-[#A5FFCB]">application/pdf</code>)
           </div>
         </div>
+      </div>
+
+      <div className="mt-8 p-6 rounded-lg bg-[#111217] border border-[#1DEE7F]/30">
+        <h3 className="mb-3 text-xl font-semibold text-[#1DEE7F]">Common use cases</h3>
+        <ul className="text-sm text-white/80 space-y-2 ml-4 list-none">
+          <li>
+            • <strong className="text-white">Invoices and receipts</strong> — Fixed margins and A4 or
+            Letter for print-ready customer PDFs.
+          </li>
+          <li>
+            • <strong className="text-white">Reports</strong> — Landscape tables and explicit margins
+            for dense data.
+          </li>
+          <li>
+            • <strong className="text-white">Dashboards</strong> — A short <code className="text-[#A5FFCB]">delayMs</code> so charts and client-rendered widgets finish before capture.
+          </li>
+          <li>
+            • <strong className="text-white">Print-ready documents</strong> — Format, orientation, and
+            margins aligned with how the document will be printed or archived.
+          </li>
+        </ul>
       </div>
 
       <div className="mt-8 flex flex-wrap gap-4">

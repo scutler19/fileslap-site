@@ -1,4 +1,7 @@
-const faqs = [
+import Link from "next/link";
+import type { ReactNode } from "react";
+
+const faqs: { q: string; a: ReactNode }[] = [
   {
     q: "What is FileSlap?",
     a: "FileSlap is a fast, secure API for converting HTML to PDF. It is designed for developers who need reliable, scalable PDF generation in their apps."
@@ -9,7 +12,16 @@ const faqs = [
   },
   {
     q: "Is my HTML or PDF data stored?",
-    a: "No. FileSlap processes all conversions in-memory and does not retain your HTML or generated PDFs."
+    a: (
+      <>
+        We do not keep your HTML or PDFs for long-term access. Generated PDFs exist only briefly
+        for delivery and are removed automatically. See{" "}
+        <Link href="/docs/security" className="text-[#1DEE7F] hover:underline">
+          Security & Privacy
+        </Link>
+        .
+      </>
+    ),
   },
   {
     q: "How fast is the API?",
@@ -31,7 +43,7 @@ export default function FAQ() {
         {faqs.map((faq, i) => (
           <div key={i} className="rounded-xl bg-[#111217] border border-[#1DEE7F]/20 p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-[#1DEE7F] mb-2">{faq.q}</h3>
-            <p className="text-sm sm:text-base text-white/80">{faq.a}</p>
+            <div className="text-sm sm:text-base text-white/80">{faq.a}</div>
           </div>
         ))}
       </div>
