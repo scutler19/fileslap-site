@@ -8,6 +8,7 @@ import {
   renderInvoiceHtml,
 } from "@/lib/invoice-templates";
 import Features from "@/components/Features";
+import { getStoredFileSlapApiKey } from "@/lib/fs-api-key";
 
 function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
@@ -55,14 +56,6 @@ const templates: { id: InvoiceTemplateId; label: string }[] = [
   { id: "minimal", label: "Minimal" },
   { id: "corporate", label: "Corporate" },
 ];
-
-function getStoredApiKey(): string | null {
-  if (typeof window === "undefined") return null;
-  const ls = localStorage.getItem("fs_api_key");
-  if (ls) return ls;
-  const m = document.cookie.match(/(?:^|;\s*)fs_api_key=([^;]+)/);
-  return m ? decodeURIComponent(m[1]) : null;
-}
 
 function formatUsd(n: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -118,7 +111,7 @@ export default function InvoiceTemplateGenerator() {
     const html = renderInvoiceHtml(template, data);
     setDownloading(true);
     try {
-      const apiKey = getStoredApiKey();
+      const apiKey = getStoredFileSlapApiKey();
       let res: Response;
 
       if (apiKey) {

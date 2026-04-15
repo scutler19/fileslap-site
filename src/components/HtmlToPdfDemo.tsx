@@ -1,6 +1,61 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import {
+  getStoredFileSlapApiKey,
+  setStoredFileSlapApiKey,
+} from "@/lib/fs-api-key";
+
+const FILESLAP_CONVERT_URL = "https://api.fileslap.com/api/convert";
+
+async function readApiErrorMessage(res: Response): Promise<string> {
+  const text = await res.text();
+  try {
+    const j = JSON.parse(text) as { error?: unknown };
+    if (typeof j.error === "string") return j.error;
+  } catch {
+    /* plain text or HTML */
+  }
+  const trimmed = text.trim();
+  if (trimmed) return trimmed;
+  return `HTTP ${res.status}`;
+}
+
+function parseHideSelectorsInput(raw: string): string[] | undefined {
+  const parts = raw
+    .split(/[\n,]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return parts.length > 0 ? parts : undefined;
+}
+
+function downloadBaseName(filenameField: string, pageUrl: string, sourceMode: "url" | "html"): string {
+  const fn = filenameField.trim();
+  if (fn) {
+    return fn.replace(/\.pdf$/i, "").replace(/[^a-zA-Z0-9-_]/g, "").slice(0, 120);
+  }
+  if (sourceMode === "url" && pageUrl.trim()) {
+    try {
+      return new URL(pageUrl.trim()).hostname.replace(/[^a-zA-Z0-9.-]+/g, "-").slice(0, 120);
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function downloadFilename(filenameField: string, pageUrl: string, sourceMode: "url" | "html"): string {
+  const base = downloadBaseName(filenameField, pageUrl, sourceMode);
+  return base ? `${base}.pdf` : "fileslap-convert.pdf";
+}
+
+function triggerPdfDownload(blobUrl: string, filename: string): void {
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = filename;
+  a.rel = "noopener";
+  a.click();
+}
 
 // Spinner component
 function Spinner() {
@@ -386,20 +441,93 @@ const EXAMPLES = [
   }
 ];
 
-function buildDemoPayload(
+type ViewportPreset = "default" | "desktop" | "mobile" | "custom";
+
+function buildConvertPayload(
+  sourceMode: "url" | "html",
+  pageUrl: string,
   html: string,
+  captureMode: "pdf" | "screenshot_pdf",
   opts: {
+    viewportPreset: ViewportPreset;
+    viewportWidth: string;
+    viewportHeight: string;
+    delayMs: string;
+    mediaType: "" | "print" | "screen";
+    hideSelectors: string;
+    waitForSelector: string;
+    timeout: string;
+    scale: string;
+    printBackground: boolean | null;
+    preferCSSPageSize: boolean | null;
+    filename: string;
     format: string;
     landscape: boolean;
     marginTop: string;
     marginRight: string;
     marginBottom: string;
     marginLeft: string;
-    delayMs: string;
-    filename: string;
   }
 ): Record<string, unknown> {
-  const body: Record<string, unknown> = { html };
+  const body: Record<string, unknown> = { captureMode };
+  if (sourceMode === "url") {
+    body.url = pageUrl.trim();
+  } else {
+    body.html = html;
+  }
+
+  if (opts.viewportPreset === "desktop") {
+    body.viewportWidth = 1280;
+    body.viewportHeight = 720;
+  } else if (opts.viewportPreset === "mobile") {
+    body.viewportWidth = 390;
+    body.viewportHeight = 844;
+  } else if (opts.viewportPreset === "custom") {
+    const w = opts.viewportWidth.trim();
+    const h = opts.viewportHeight.trim();
+    if (w && h) {
+      const nw = Math.floor(Number(w));
+      const nh = Math.floor(Number(h));
+      if (Number.isFinite(nw) && Number.isFinite(nh)) {
+        body.viewportWidth = nw;
+        body.viewportHeight = nh;
+      }
+    }
+  }
+
+  const d = opts.delayMs.trim();
+  if (d) {
+    const n = Math.floor(Number(d));
+    if (Number.isFinite(n) && n >= 0) {
+      body.delayMs = Math.min(10_000, n);
+    }
+  }
+
+  if (opts.mediaType === "print" || opts.mediaType === "screen") {
+    body.mediaType = opts.mediaType;
+  }
+
+  const hs = parseHideSelectorsInput(opts.hideSelectors);
+  if (hs) body.hideSelectors = hs;
+
+  const wfs = opts.waitForSelector.trim();
+  if (wfs) body.waitForSelector = wfs;
+
+  const to = opts.timeout.trim();
+  if (to) {
+    const n = Math.floor(Number(to));
+    if (Number.isFinite(n)) body.timeout = n;
+  }
+
+  const sc = opts.scale.trim();
+  if (sc) {
+    const n = Number(sc);
+    if (Number.isFinite(n)) body.scale = n;
+  }
+
+  if (opts.printBackground !== null) body.printBackground = opts.printBackground;
+  if (opts.preferCSSPageSize !== null) body.preferCSSPageSize = opts.preferCSSPageSize;
+
   if (opts.format.trim()) body.format = opts.format.trim();
   if (opts.landscape) body.landscape = true;
   const mt = opts.marginTop.trim();
@@ -410,49 +538,78 @@ function buildDemoPayload(
   if (mr) body.marginRight = /^\d+(\.\d+)?$/.test(mr) ? Number(mr) : mr;
   if (mb) body.marginBottom = /^\d+(\.\d+)?$/.test(mb) ? Number(mb) : mb;
   if (ml) body.marginLeft = /^\d+(\.\d+)?$/.test(ml) ? Number(ml) : ml;
-  const d = opts.delayMs.trim();
-  if (d) {
-    const n = Math.floor(Number(d));
-    if (Number.isFinite(n) && n >= 0) {
-      body.delayMs = Math.min(10_000, n);
-    }
-  }
+
   const fn = opts.filename.trim();
   if (fn) body.filename = fn.slice(0, 200);
+
   return body;
 }
 
-function downloadNameFromFilename(filename: string): string {
-  const t = filename.trim();
-  if (!t) return "fileslap-demo.pdf";
-  const base = t
-    .replace(/\.pdf$/i, "")
-    .replace(/[^a-zA-Z0-9-_]/g, "")
-    .slice(0, 120);
-  return base ? `${base}.pdf` : "fileslap-demo.pdf";
-}
-
 export default function HtmlToPdfDemo() {
+  const [sourceMode, setSourceMode] = useState<"url" | "html">("url");
+  const [pageUrl, setPageUrl] = useState("https://example.com");
   const [html, setHtml] = useState("<h1>Hello FileSlap</h1>");
+  const [captureMode, setCaptureMode] = useState<"pdf" | "screenshot_pdf">("pdf");
+  const [apiKeyInput, setApiKeyInput] = useState("");
+
+  const [viewportPreset, setViewportPreset] = useState<ViewportPreset>("desktop");
+  const [viewportWidth, setViewportWidth] = useState("1280");
+  const [viewportHeight, setViewportHeight] = useState("720");
+  const [delayMs, setDelayMs] = useState("");
+  const [mediaType, setMediaType] = useState<"" | "print" | "screen">("");
+  const [hideSelectors, setHideSelectors] = useState("");
+  const [waitForSelector, setWaitForSelector] = useState("");
+  const [timeoutMs, setTimeoutMs] = useState("");
+  const [scale, setScale] = useState("");
+  const [printBackground, setPrintBackground] = useState<boolean | null>(null);
+  const [preferCSSPageSize, setPreferCSSPageSize] = useState<boolean | null>(null);
+
   const [format, setFormat] = useState("A4");
   const [landscape, setLandscape] = useState(false);
   const [marginTop, setMarginTop] = useState("");
   const [marginRight, setMarginRight] = useState("");
   const [marginBottom, setMarginBottom] = useState("");
   const [marginLeft, setMarginLeft] = useState("");
-  const [delayMs, setDelayMs] = useState("");
   const [filename, setFilename] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [suggestScreenshot, setSuggestScreenshot] = useState(false);
 
-  // Check remaining attempts on component mount
-  useEffect(() => {
-    checkRemainingAttempts();
+  const usingOwnKey = apiKeyInput.trim().length > 0;
+
+  const checkRemainingAttempts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/demo-convert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html: "check" }),
+      });
+
+      if (res.ok) {
+        const data = (await res.json()) as { remainingAttempts?: number };
+        if (typeof data.remainingAttempts === "number") {
+          setRemainingAttempts(data.remainingAttempts);
+        }
+      } else {
+        setRemainingAttempts(3);
+      }
+    } catch {
+      setRemainingAttempts(3);
+    }
   }, []);
 
-  // Cleanup preview URL on unmount
+  useEffect(() => {
+    setApiKeyInput(getStoredFileSlapApiKey() ?? "");
+  }, []);
+
+  useEffect(() => {
+    if (usingOwnKey) return;
+    void checkRemainingAttempts();
+  }, [usingOwnKey, checkRemainingAttempts]);
+
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -461,83 +618,110 @@ export default function HtmlToPdfDemo() {
     };
   }, [previewUrl]);
 
-  const checkRemainingAttempts = async () => {
-    try {
-      const res = await fetch("/api/demo-convert", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html: "check" }),
-      });
-      
-      if (res.ok) {
-        const data = await res.json();
-        setRemainingAttempts(data.remainingAttempts);
-      } else {
-        // If there&apos;s an error, assume 3 attempts remaining
-        setRemainingAttempts(3);
-      }
-    } catch {
-      // Silently fail - this is just for checking attempts
-      setRemainingAttempts(3);
-    }
-  };
-
   const convert = async () => {
     setLoading(true);
     setError(null);
+    setSuggestScreenshot(false);
+
+    if (sourceMode === "url" && !pageUrl.trim()) {
+      setError("Enter a URL (https://…).");
+      setLoading(false);
+      return;
+    }
+    if (sourceMode === "html" && !html.trim()) {
+      setError("Paste HTML, or switch to URL mode.");
+      setLoading(false);
+      return;
+    }
+
+    const payload = buildConvertPayload(sourceMode, pageUrl, html, captureMode, {
+      viewportPreset,
+      viewportWidth,
+      viewportHeight,
+      delayMs,
+      mediaType,
+      hideSelectors,
+      waitForSelector,
+      timeout: timeoutMs,
+      scale,
+      printBackground,
+      preferCSSPageSize,
+      filename,
+      format,
+      landscape,
+      marginTop,
+      marginRight,
+      marginBottom,
+      marginLeft,
+    });
+
+    const key = apiKeyInput.trim();
+    const url = key ? FILESLAP_CONVERT_URL : "/api/demo-convert";
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (key) headers["X-API-KEY"] = key;
+
     try {
-      const payload = buildDemoPayload(html, {
-        format,
-        landscape,
-        marginTop,
-        marginRight,
-        marginBottom,
-        marginLeft,
-        delayMs,
-        filename,
-      });
-      const res = await fetch("/api/demo-convert", {
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload),
       });
-      
-      // Update remaining attempts from response header
+
       const remaining = res.headers.get("X-Remaining-Attempts");
-      if (remaining !== null) {
-        setRemainingAttempts(parseInt(remaining));
+      if (remaining !== null && !key) {
+        setRemainingAttempts(parseInt(remaining, 10));
       }
-      
+
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        const errorMessage = errorData.error || `Status ${res.status}`;
-        
-        // Handle specific error cases
-        if (errorMessage.includes("Daily demo limit reached")) {
-          setError(errorMessage);
-          setRemainingAttempts(0);
-        } else if (errorMessage.includes("Rate limit exceeded")) {
-          setError(errorMessage);
-        } else if (errorMessage.includes("taking too long")) {
-          setError("The conversion service is slow right now. Please try again in a moment.");
-        } else if (errorMessage.includes("service unavailable")) {
-          setError("The conversion service is temporarily down. Please try again later.");
+        const msg = await readApiErrorMessage(res);
+        if (res.status === 401) {
+          setError(`Unauthorized: ${msg}`);
+        } else if (res.status === 403) {
+          setError(`Forbidden: ${msg}`);
+        } else if (res.status === 402) {
+          setError(msg);
+        } else if (res.status === 429) {
+          setError(msg);
+          if (msg.includes("Daily demo") || msg.includes("demo limit")) {
+            setRemainingAttempts(0);
+          }
         } else {
-          setError("Conversion failed. Please try again or check your HTML.");
+          setError(msg);
+        }
+        if (
+          captureMode === "pdf" &&
+          res.status !== 401 &&
+          res.status !== 402 &&
+          res.status !== 403
+        ) {
+          const demoCap =
+            res.status === 429 &&
+            (msg.toLowerCase().includes("daily demo") ||
+              msg.toLowerCase().includes("demo limit"));
+          if (!demoCap) setSuggestScreenshot(true);
         }
         return;
       }
-      
+
       const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      setPreviewUrl(url);
+      const dlName = downloadFilename(filename, pageUrl, sourceMode);
+      const nextUrl = window.URL.createObjectURL(blob);
+      setPreviewUrl((prev) => {
+        if (prev) window.URL.revokeObjectURL(prev);
+        return nextUrl;
+      });
+      triggerPdfDownload(nextUrl, dlName);
+      if (key) setStoredFileSlapApiKey(key);
     } catch (e: unknown) {
-      setError("Conversion failed. Please try again.");
+      setError(e instanceof Error ? e.message : "Conversion failed. Please try again.");
+      if (captureMode === "pdf") setSuggestScreenshot(true);
       console.error(e);
     } finally {
       setLoading(false);
     }
   };
+
+  const demoBlocked = !usingOwnKey && remainingAttempts === 0;
 
   return (
     <section className="w-full max-w-5xl mx-auto mt-16 sm:mt-24 px-6">
@@ -546,45 +730,141 @@ export default function HtmlToPdfDemo() {
           Try It Now
         </h2>
         <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto mb-4 sm:mb-6">
-          Test the API right now. Paste HTML below; expand advanced options to try layout and timing
-          fields the API accepts.
+          Convert a public web page or raw HTML to PDF using the same{" "}
+          <code className="text-[#1DEE7F]/90">POST /api/convert</code> contract as production: JSON
+          in, PDF bytes out, with <code className="text-[#1DEE7F]/90">X-API-KEY</code> on direct calls.
         </p>
-        
-        {/* Daily Usage Counter */}
-        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-[#111217] border border-[#1DEE7F]/30">
-          <span className="text-xs sm:text-sm text-white/60">Daily Demo:</span>
-          <span className="text-xs sm:text-sm font-semibold text-[#1DEE7F]">
-            {remainingAttempts !== null ? `${remainingAttempts}/3` : "3/3"} conversions remaining
-          </span>
-        </div>
+
+        {!usingOwnKey && (
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-[#111217] border border-[#1DEE7F]/30">
+            <span className="text-xs sm:text-sm text-white/60">Daily demo (no key):</span>
+            <span className="text-xs sm:text-sm font-semibold text-[#1DEE7F]">
+              {remainingAttempts !== null ? `${remainingAttempts}/3` : "…/3"} left
+            </span>
+          </div>
+        )}
+        {usingOwnKey && (
+          <p className="text-xs sm:text-sm text-white/55 max-w-xl mx-auto">
+            Using your API key — requests go straight to{" "}
+            <span className="text-white/80">api.fileslap.com</span> (not the 3/day demo proxy).
+          </p>
+        )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-start">
-        {/* Textarea */}
-        <div className="flex-1 w-full">
-          <textarea
-            value={html}
-            onChange={(e) => setHtml(e.target.value)}
-            rows={10}
-            className="w-full rounded-xl bg-[#111217] p-4 sm:p-6 text-sm text-white/90 outline-none focus:ring-2 focus:ring-[#1DEE7F] border border-[#1DEE7F]/20 transition-all duration-200"
-            placeholder="Paste your HTML here..."
+      <div className="rounded-xl border border-[#1DEE7F]/20 bg-[#111217]/80 p-4 sm:p-5 space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setSourceMode("url")}
+            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+              sourceMode === "url"
+                ? "bg-[#1DEE7F] text-[#0D0D11]"
+                : "bg-[#0D0D11] text-white/80 border border-[#1DEE7F]/25"
+            }`}
+          >
+            From URL
+          </button>
+          <button
+            type="button"
+            onClick={() => setSourceMode("html")}
+            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+              sourceMode === "html"
+                ? "bg-[#1DEE7F] text-[#0D0D11]"
+                : "bg-[#0D0D11] text-white/80 border border-[#1DEE7F]/25"
+            }`}
+          >
+            Paste HTML
+          </button>
+        </div>
+
+        {sourceMode === "url" ? (
+          <label className="block text-sm text-white/80">
+            <span className="block mb-1 text-white/90 font-medium">Page URL</span>
+            <input
+              type="url"
+              value={pageUrl}
+              onChange={(e) => setPageUrl(e.target.value)}
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2.5 text-sm text-white placeholder:text-white/35"
+              placeholder="https://example.com"
+              autoComplete="url"
+            />
+          </label>
+        ) : (
+          <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-start">
+            <div className="flex-1 w-full">
+              <textarea
+                value={html}
+                onChange={(e) => setHtml(e.target.value)}
+                rows={10}
+                className="w-full rounded-xl bg-[#0D0D11] p-4 sm:p-6 text-sm text-white/90 outline-none focus:ring-2 focus:ring-[#1DEE7F] border border-[#1DEE7F]/20 transition-all duration-200"
+                placeholder="Paste your HTML here..."
+              />
+            </div>
+            <div className="w-full md:w-72 flex flex-col gap-3 sm:gap-4 mt-0">
+              <div className="mb-1 text-white/70 text-xs sm:text-sm font-medium text-center md:text-left">
+                Examples:
+              </div>
+              {EXAMPLES.map((ex) => (
+                <button
+                  key={ex.label}
+                  type="button"
+                  onClick={() => {
+                    setSourceMode("html");
+                    setHtml(ex.html);
+                  }}
+                  className="rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/30 hover:border-[#1DEE7F] shadow-sm px-3 sm:px-4 py-2 sm:py-3 text-left text-white transition-all duration-150 hover:bg-[#1DEE7F]/10 focus:outline-none focus:ring-2 focus:ring-[#1DEE7F]"
+                  aria-label={`Insert ${ex.label} HTML example`}
+                >
+                  <span className="font-semibold text-[#1DEE7F] text-sm sm:text-base">{ex.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium text-white/90 mb-2">Capture mode</legend>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="radio"
+              name="captureMode"
+              checked={captureMode === "pdf"}
+              onChange={() => setCaptureMode("pdf")}
+              className="mt-1 h-4 w-4 border-[#1DEE7F]/40 text-[#1DEE7F]"
+            />
+            <span>
+              <span className="text-white font-medium">Standard PDF (fast)</span>
+              <span className="block text-xs text-white/55">Maps to captureMode pdf (Playwright print PDF).</span>
+            </span>
+          </label>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="radio"
+              name="captureMode"
+              checked={captureMode === "screenshot_pdf"}
+              onChange={() => setCaptureMode("screenshot_pdf")}
+              className="mt-1 h-4 w-4 border-[#1DEE7F]/40 text-[#1DEE7F]"
+            />
+            <span>
+              <span className="text-white font-medium">Visual Capture</span>
+              <span className="block text-xs text-white/55">
+                Recommended for complex or JS-heavy sites — maps to captureMode screenshot_pdf.
+              </span>
+            </span>
+          </label>
+        </fieldset>
+
+        <label className="block text-sm text-white/80">
+          <span className="block mb-1 text-white/90 font-medium">API key (optional)</span>
+          <input
+            type="password"
+            autoComplete="off"
+            value={apiKeyInput}
+            onChange={(e) => setApiKeyInput(e.target.value)}
+            className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            placeholder="Paste key to call api.fileslap.com directly (stored in this browser)"
           />
-        </div>
-        {/* Example Tiles */}
-        <div className="w-full md:w-72 flex flex-col gap-3 sm:gap-4 mt-4 md:mt-0">
-          <div className="mb-2 text-white/70 text-xs sm:text-sm font-medium text-center md:text-left">Need an example? Try one of these:</div>
-          {EXAMPLES.map((ex) => (
-            <button
-              key={ex.label}
-              type="button"
-              onClick={() => setHtml(ex.html)}
-              className="rounded-lg bg-[#111217] border border-[#1DEE7F]/30 hover:border-[#1DEE7F] shadow-sm px-3 sm:px-4 py-2 sm:py-3 text-left text-white transition-all duration-150 hover:bg-[#1DEE7F]/10 focus:outline-none focus:ring-2 focus:ring-[#1DEE7F]"
-              aria-label={`Insert ${ex.label} HTML example`}
-            >
-              <span className="font-semibold text-[#1DEE7F] text-sm sm:text-base">{ex.label}</span>
-            </button>
-          ))}
-        </div>
+        </label>
       </div>
 
       <details className="mt-6 sm:mt-8 rounded-xl border border-[#1DEE7F]/20 bg-[#111217]/80 px-4 py-3 sm:px-5 sm:py-4 text-left max-w-5xl mx-auto">
@@ -592,6 +872,134 @@ export default function HtmlToPdfDemo() {
           Advanced options
         </summary>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <label className="block text-xs sm:text-sm text-white/70 sm:col-span-2 lg:col-span-3">
+            <span className="block mb-1 text-white/90">Viewport</span>
+            <select
+              value={viewportPreset}
+              onChange={(e) => setViewportPreset(e.target.value as ViewportPreset)}
+              className="w-full max-w-md rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
+            >
+              <option value="default">Default (omit viewport — server defaults)</option>
+              <option value="desktop">Desktop preset (1280×720)</option>
+              <option value="mobile">Mobile preset (390×844)</option>
+              <option value="custom">Custom width × height (px)</option>
+            </select>
+          </label>
+          {viewportPreset === "custom" && (
+            <>
+              <label className="block text-xs sm:text-sm text-white/70">
+                <span className="block mb-1 text-white/90">viewportWidth</span>
+                <input
+                  type="number"
+                  min={320}
+                  max={3840}
+                  value={viewportWidth}
+                  onChange={(e) => setViewportWidth(e.target.value)}
+                  className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
+                />
+              </label>
+              <label className="block text-xs sm:text-sm text-white/70">
+                <span className="block mb-1 text-white/90">viewportHeight</span>
+                <input
+                  type="number"
+                  min={320}
+                  max={3840}
+                  value={viewportHeight}
+                  onChange={(e) => setViewportHeight(e.target.value)}
+                  className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
+                />
+              </label>
+            </>
+          )}
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">delayMs (0–10000)</span>
+            <input
+              type="number"
+              min={0}
+              max={10_000}
+              value={delayMs}
+              onChange={(e) => setDelayMs(e.target.value)}
+              placeholder="ms before capture"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">mediaType</span>
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value as "" | "print" | "screen")}
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
+            >
+              <option value="">Default (print)</option>
+              <option value="print">print</option>
+              <option value="screen">screen</option>
+            </select>
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70 sm:col-span-2 lg:col-span-3">
+            <span className="block mb-1 text-white/90">hideSelectors (comma or newline separated)</span>
+            <textarea
+              value={hideSelectors}
+              onChange={(e) => setHideSelectors(e.target.value)}
+              rows={2}
+              placeholder="#cookie-banner, .ads"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">waitForSelector</span>
+            <input
+              type="text"
+              value={waitForSelector}
+              onChange={(e) => setWaitForSelector(e.target.value)}
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">timeout (ms, 1–30000)</span>
+            <input
+              type="number"
+              min={1}
+              max={30_000}
+              value={timeoutMs}
+              onChange={(e) => setTimeoutMs(e.target.value)}
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
+            />
+          </label>
+          <label className="block text-xs sm:text-sm text-white/70">
+            <span className="block mb-1 text-white/90">scale (0.1–2)</span>
+            <input
+              type="text"
+              value={scale}
+              onChange={(e) => setScale(e.target.value)}
+              placeholder="optional"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+            />
+          </label>
+          <label className="flex items-center gap-2 text-sm text-white/90">
+            <input
+              type="checkbox"
+              checked={printBackground === true}
+              onChange={(e) =>
+                setPrintBackground(e.target.checked ? true : null)
+              }
+              className="h-4 w-4 rounded border-[#1DEE7F]/40 text-[#1DEE7F]"
+            />
+            Force printBackground true (omit when unchecked — server default true)
+          </label>
+          <label className="flex items-center gap-2 text-sm text-white/90 sm:col-span-2">
+            <input
+              type="checkbox"
+              checked={preferCSSPageSize === true}
+              onChange={(e) =>
+                setPreferCSSPageSize(e.target.checked ? true : null)
+              }
+              className="h-4 w-4 rounded border-[#1DEE7F]/40 text-[#1DEE7F]"
+            />
+            preferCSSPageSize
+          </label>
+          <p className="text-xs text-white/45 sm:col-span-2 lg:col-span-3">
+            Page layout (optional): same fields as the hosted API (format, margins, filename).
+          </p>
           <label className="block text-xs sm:text-sm text-white/70">
             <span className="block mb-1 text-white/90">format</span>
             <select
@@ -603,7 +1011,7 @@ export default function HtmlToPdfDemo() {
               <option value="Letter">Letter</option>
             </select>
           </label>
-          <label className="flex items-center gap-3 sm:col-span-2 lg:col-span-1 text-sm text-white/90 pt-6 sm:pt-8">
+          <label className="flex items-center gap-3 sm:col-span-2 lg:col-span-1 text-sm text-white/90 pt-2">
             <input
               type="checkbox"
               checked={landscape}
@@ -628,8 +1036,7 @@ export default function HtmlToPdfDemo() {
               type="text"
               value={marginRight}
               onChange={(e) => setMarginRight(e.target.value)}
-              placeholder="optional"
-              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
             />
           </label>
           <label className="block text-xs sm:text-sm text-white/70">
@@ -638,8 +1045,7 @@ export default function HtmlToPdfDemo() {
               type="text"
               value={marginBottom}
               onChange={(e) => setMarginBottom(e.target.value)}
-              placeholder="optional"
-              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
             />
           </label>
           <label className="block text-xs sm:text-sm text-white/70">
@@ -648,29 +1054,16 @@ export default function HtmlToPdfDemo() {
               type="text"
               value={marginLeft}
               onChange={(e) => setMarginLeft(e.target.value)}
-              placeholder="optional"
-              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
-            />
-          </label>
-          <label className="block text-xs sm:text-sm text-white/70">
-            <span className="block mb-1 text-white/90">delayMs (0–10000)</span>
-            <input
-              type="number"
-              min={0}
-              max={10_000}
-              value={delayMs}
-              onChange={(e) => setDelayMs(e.target.value)}
-              placeholder="wait before PDF"
-              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
+              className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white"
             />
           </label>
           <label className="block text-xs sm:text-sm text-white/70 sm:col-span-2">
-            <span className="block mb-1 text-white/90">filename (optional, .pdf added server-side)</span>
+            <span className="block mb-1 text-white/90">filename (optional)</span>
             <input
               type="text"
               value={filename}
               onChange={(e) => setFilename(e.target.value)}
-              placeholder="invoice-acme"
+              placeholder="my-export"
               className="w-full rounded-lg bg-[#0D0D11] border border-[#1DEE7F]/25 px-3 py-2 text-sm text-white placeholder:text-white/35"
             />
           </label>
@@ -678,85 +1071,101 @@ export default function HtmlToPdfDemo() {
       </details>
 
       {error && (
-          <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 mt-4 sm:mt-6">
-            <p className="text-xs sm:text-sm text-red-400">{error}</p>
-            {error.includes("Daily demo limit reached") && (
-              <div className="mt-2 sm:mt-3">
-                <a
-                  href="/signup"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#1DEE7F] hover:underline"
-                >
-                  Get your free API key →
-                </a>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="text-center mt-6 sm:mt-8">
-          <button
-            onClick={convert}
-            disabled={loading || remainingAttempts === 0}
-            className="rounded-full bg-[#1DEE7F] px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-[#0D0D11] hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed transition duration-200 shadow-lg hover:shadow-xl"
-          >
-            {loading ? <Spinner /> : remainingAttempts === 0 ? "Daily Limit Reached" : "Convert to PDF"}
-          </button>
-          
-          {remainingAttempts === 0 && (
-            <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-white/60">
-              Get your own API key for more conversions
+        <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 mt-4 sm:mt-6">
+          <p className="text-xs sm:text-sm text-red-400 whitespace-pre-wrap">{error}</p>
+          {suggestScreenshot && captureMode === "pdf" && (
+            <p className="mt-2 text-xs sm:text-sm text-white/70">
+              If layout looked wrong or the page is very dynamic, try{" "}
+              <button
+                type="button"
+                className="text-[#1DEE7F] underline"
+                onClick={() => {
+                  setCaptureMode("screenshot_pdf");
+                  setSuggestScreenshot(false);
+                }}
+              >
+                Visual Capture (screenshot_pdf)
+              </button>
+              .
             </p>
           )}
+          {(error.includes("Daily demo limit") || error.includes("demo limit")) && (
+            <div className="mt-2 sm:mt-3">
+              <a
+                href="/signup"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#1DEE7F] hover:underline"
+              >
+                Get your free API key →
+              </a>
+            </div>
+          )}
         </div>
+      )}
 
-        {previewUrl && (
-          <div className="mt-6 sm:mt-8">
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 text-center">PDF Generated Successfully!</h3>
-            <div className="w-full max-w-2xl mx-auto bg-[#111217] rounded-xl p-4 sm:p-6 border border-[#1DEE7F]/20">
-              <div className="mb-3 sm:mb-4 text-center">
-                <p className="text-xs sm:text-sm text-white/60 mb-2 sm:mb-3">Preview your generated PDF:</p>
-                {/* Mobile-friendly PDF preview */}
-                <div className="relative">
-                  <iframe
-                    src={previewUrl}
-                    className="w-full h-48 sm:h-64 rounded-lg border border-[#1DEE7F]/10 hidden sm:block"
-                    title="PDF Preview"
-                  />
-                  {/* Mobile fallback */}
-                  <div className="sm:hidden bg-[#0D0D11] rounded-lg border border-[#1DEE7F]/10 p-6 text-center">
-                    <div className="text-4xl mb-3">📄</div>
-                    <p className="text-sm text-white/80 mb-4">PDF generated successfully!</p>
-                    <p className="text-xs text-white/60">Tap the download button below to view your PDF</p>
-                  </div>
+      <div className="text-center mt-6 sm:mt-8">
+        <button
+          type="button"
+          onClick={convert}
+          disabled={loading || demoBlocked}
+          className="rounded-full bg-[#1DEE7F] px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-[#0D0D11] hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed transition duration-200 shadow-lg hover:shadow-xl"
+        >
+          {loading ? <Spinner /> : demoBlocked ? "Daily demo limit" : "Convert to PDF"}
+        </button>
+        {demoBlocked && (
+          <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-white/60">
+            Add your API key above or come back tomorrow for three more demo conversions.
+          </p>
+        )}
+      </div>
+
+      {previewUrl && (
+        <div className="mt-6 sm:mt-8">
+          <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 text-center">PDF ready</h3>
+          <p className="text-center text-xs text-white/55 mb-3">
+            Your browser should have started a download; preview below is optional.
+          </p>
+          <div className="w-full max-w-2xl mx-auto bg-[#111217] rounded-xl p-4 sm:p-6 border border-[#1DEE7F]/20">
+            <div className="mb-3 sm:mb-4 text-center">
+              <div className="relative">
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-48 sm:h-64 rounded-lg border border-[#1DEE7F]/10 hidden sm:block"
+                  title="PDF Preview"
+                />
+                <div className="sm:hidden bg-[#0D0D11] rounded-lg border border-[#1DEE7F]/10 p-6 text-center">
+                  <p className="text-sm text-white/80">Check your downloads folder for the PDF.</p>
                 </div>
               </div>
-              <div className="text-center">
-                <button
-                  onClick={() => {
-                    const a = document.createElement("a");
-                    a.href = previewUrl;
-                    a.download = downloadNameFromFilename(filename);
-                    a.click();
-                  }}
-                  className="rounded-full bg-[#1DEE7F] px-4 sm:px-6 py-2 sm:py-3 font-medium text-[#0D0D11] hover:brightness-110 transition text-sm sm:text-base"
-                >
-                  Download PDF
-                </button>
-                <button
-                  onClick={() => {
-                    setPreviewUrl(null);
-                    if (previewUrl) {
-                      window.URL.revokeObjectURL(previewUrl);
-                    }
-                  }}
-                  className="ml-2 sm:ml-3 rounded-full border border-[#1DEE7F] px-4 sm:px-6 py-2 sm:py-3 font-medium text-white hover:bg-[#1DEE7F]/10 transition text-sm sm:text-base"
-                >
-                  Convert Another
-                </button>
-              </div>
+            </div>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() =>
+                  triggerPdfDownload(
+                    previewUrl,
+                    downloadFilename(filename, pageUrl, sourceMode)
+                  )
+                }
+                className="rounded-full bg-[#1DEE7F] px-4 sm:px-6 py-2 sm:py-3 font-medium text-[#0D0D11] hover:brightness-110 transition text-sm sm:text-base"
+              >
+                Download again
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPreviewUrl((prev) => {
+                    if (prev) window.URL.revokeObjectURL(prev);
+                    return null;
+                  });
+                }}
+                className="ml-2 sm:ml-3 rounded-full border border-[#1DEE7F] px-4 sm:px-6 py-2 sm:py-3 font-medium text-white hover:bg-[#1DEE7F]/10 transition text-sm sm:text-base"
+              >
+                Dismiss
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </section>
   );
-} 
+}

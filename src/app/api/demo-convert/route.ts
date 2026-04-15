@@ -7,6 +7,10 @@ const DEMO_API_KEY = process.env.DEMO_API_KEY || "demo-unlimited-key-2024";
 
 /** Matches html2pdf-service `DELAY_MS_MAX`. */
 const DELAY_MS_MAX = 10_000;
+const TIMEOUT_MS_MIN = 1;
+const TIMEOUT_MS_MAX = 30_000;
+const VIEWPORT_MIN = 320;
+const VIEWPORT_MAX = 3840;
 
 function getCurrentDate(): string {
   return new Date().toISOString().split("T")[0];
@@ -51,17 +55,153 @@ function coerceDelayMs(value: unknown): number | undefined {
   return Math.min(Math.floor(n), DELAY_MS_MAX);
 }
 
-function buildForwardBody(raw: Record<string, unknown>): { ok: true; body: Record<string, unknown> } | { ok: false; error: string } {
-  const html = raw.html;
-  if (typeof html !== "string" || html.length === 0) {
-    return { ok: false, error: "html is required" };
-  }
+function optionalTrimmedString(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== "string") return undefined;
+  const t = value.trim();
+  return t === "" ? undefined : t;
+}
 
-  if (html === "check") {
+function optionalBoolean(value: unknown): boolean | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (value === true || value === false) return value;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return undefined;
+}
+
+function optionalCaptureMode(value: unknown): "pdf" | "screenshot_pdf" | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (value === "pdf" || value === "screenshot_pdf") return value;
+  throw new Error("captureMode");
+}
+
+function optionalMediaType(value: unknown): "print" | "screen" | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (value === "print" || value === "screen") return value;
+  throw new Error("mediaType");
+}
+
+function optionalViewportInt(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  let n: number;
+  if (typeof value === "number") {
+    n = value;
+  } else if (typeof value === "string") {
+    const t = value.trim();
+    if (!t) return undefined;
+    n = Number(t);
+  } else {
+    throw new Error("viewport");
+  }
+  if (!Number.isFinite(n) || !Number.isInteger(n) || n < VIEWPORT_MIN || n > VIEWPORT_MAX) {
+    throw new Error("viewport");
+  }
+  return n;
+}
+
+function optionalTimeoutMs(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  let n: number;
+  if (typeof value === "number") {
+    n = value;
+  } else if (typeof value === "string") {
+    const t = value.trim();
+    if (!t) return undefined;
+    n = Number(t);
+  } else {
+    throw new Error("timeout");
+  }
+  if (!Number.isFinite(n) || !Number.isInteger(n) || n < TIMEOUT_MS_MIN || n > TIMEOUT_MS_MAX) {
+    throw new Error("timeout");
+  }
+  return n;
+}
+
+function optionalScale(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  let n: number;
+  if (typeof value === "number") {
+    n = value;
+  } else if (typeof value === "string") {
+    const t = value.trim();
+    if (!t) return undefined;
+    n = Number(t);
+  } else {
+    throw new Error("scale");
+  }
+  if (!Number.isFinite(n) || n < 0.1 || n > 2) throw new Error("scale");
+  return n;
+}
+
+function optionalWaitForSelector(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== "string") throw new Error("waitForSelector");
+  const t = value.trim();
+  if (t === "") throw new Error("waitForSelector");
+  return t;
+}
+
+function optionalHideSelectors(value: unknown): string[] | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (typeof value === "string") {
+    const t = value.trim();
+    if (!t) throw new Error("hideSelectors");
+    return [t];
+  }
+  if (Array.isArray(value)) {
+    const out: string[] = [];
+    for (const item of value) {
+      if (typeof item !== "string") throw new Error("hideSelectors");
+      const s = item.trim();
+      if (!s) throw new Error("hideSelectors");
+      out.push(s);
+    }
+    return out.length > 0 ? out : undefined;
+  }
+  throw new Error("hideSelectors");
+}
+
+function assertHttpUrl(urlString: string): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(urlString);
+  } catch {
+    throw new Error("url");
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error("url");
+  if (parsed.hostname === "") throw new Error("url");
+}
+
+function buildForwardBody(
+  raw: Record<string, unknown>
+): { ok: true; body: Record<string, unknown> } | { ok: false; error: string } {
+  const htmlRaw = typeof raw.html === "string" ? raw.html : undefined;
+  const urlRaw = optionalTrimmedString(raw.url);
+
+  if (htmlRaw === "check") {
+    if (urlRaw !== undefined) {
+      return { ok: false, error: "Invalid check request" };
+    }
     return { ok: true, body: { html: "check" } };
   }
 
-  const body: Record<string, unknown> = { html };
+  const htmlPresent = htmlRaw !== undefined && htmlRaw.trim().length > 0;
+  const urlPresent = urlRaw !== undefined;
+
+  if (htmlPresent === urlPresent) {
+    return { ok: false, error: "Provide exactly one of html or url (non-empty)." };
+  }
+
+  const body: Record<string, unknown> = htmlPresent ? { html: htmlRaw!.trim() } : { url: urlRaw! };
+
+  if (urlPresent) {
+    try {
+      assertHttpUrl(urlRaw!);
+    } catch {
+      return { ok: false, error: "url must be a valid http(s) URL" };
+    }
+  }
 
   if (raw.format !== undefined && raw.format !== null && raw.format !== "") {
     if (typeof raw.format !== "string") {
@@ -76,7 +216,12 @@ function buildForwardBody(raw: Record<string, unknown>): { ok: true; body: Recor
 
   if (raw.landscape === true || raw.landscape === "true") {
     body.landscape = true;
-  } else if (raw.landscape !== undefined && raw.landscape !== null && raw.landscape !== false && raw.landscape !== "false") {
+  } else if (
+    raw.landscape !== undefined &&
+    raw.landscape !== null &&
+    raw.landscape !== false &&
+    raw.landscape !== "false"
+  ) {
     return { ok: false, error: "landscape must be a boolean" };
   }
 
@@ -93,7 +238,10 @@ function buildForwardBody(raw: Record<string, unknown>): { ok: true; body: Recor
     const delay = coerceDelayMs(raw.delayMs);
     if (delay !== undefined) body.delayMs = delay;
   } catch {
-    return { ok: false, error: "delayMs must be a non-negative number (milliseconds, capped at 10000)" };
+    return {
+      ok: false,
+      error: "delayMs must be a non-negative number (milliseconds, capped at 10000)",
+    };
   }
 
   if (raw.filename !== undefined && raw.filename !== null && String(raw.filename).trim() !== "") {
@@ -102,6 +250,74 @@ function buildForwardBody(raw: Record<string, unknown>): { ok: true; body: Recor
     }
     body.filename = raw.filename.trim().slice(0, 200);
   }
+
+  try {
+    const cm = optionalCaptureMode(raw.captureMode);
+    if (cm !== undefined) body.captureMode = cm;
+  } catch {
+    return { ok: false, error: "captureMode must be pdf or screenshot_pdf" };
+  }
+
+  try {
+    const mt = optionalMediaType(raw.mediaType);
+    if (mt !== undefined) body.mediaType = mt;
+  } catch {
+    return { ok: false, error: "mediaType must be print or screen" };
+  }
+
+  try {
+    const vw = optionalViewportInt(raw.viewportWidth);
+    const vh = optionalViewportInt(raw.viewportHeight);
+    if ((vw === undefined) !== (vh === undefined)) {
+      return { ok: false, error: "viewportWidth and viewportHeight must both be set or both omitted" };
+    }
+    if (vw !== undefined && vh !== undefined) {
+      body.viewportWidth = vw;
+      body.viewportHeight = vh;
+    }
+  } catch {
+    return {
+      ok: false,
+      error: `viewportWidth and viewportHeight must be integers between ${VIEWPORT_MIN} and ${VIEWPORT_MAX}`,
+    };
+  }
+
+  try {
+    const to = optionalTimeoutMs(raw.timeout);
+    if (to !== undefined) body.timeout = to;
+  } catch {
+    return {
+      ok: false,
+      error: `timeout must be an integer between ${TIMEOUT_MS_MIN} and ${TIMEOUT_MS_MAX} (ms)`,
+    };
+  }
+
+  try {
+    const sc = optionalScale(raw.scale);
+    if (sc !== undefined) body.scale = sc;
+  } catch {
+    return { ok: false, error: "scale must be a number from 0.1 to 2" };
+  }
+
+  try {
+    const wfs = optionalWaitForSelector(raw.waitForSelector);
+    if (wfs !== undefined) body.waitForSelector = wfs;
+  } catch {
+    return { ok: false, error: "waitForSelector must be a non-empty string when provided" };
+  }
+
+  try {
+    const hs = optionalHideSelectors(raw.hideSelectors);
+    if (hs !== undefined) body.hideSelectors = hs;
+  } catch {
+    return { ok: false, error: "hideSelectors must be a non-empty string or array of strings" };
+  }
+
+  const pb = optionalBoolean(raw.printBackground);
+  if (pb !== undefined) body.printBackground = pb;
+
+  const pcs = optionalBoolean(raw.preferCSSPageSize);
+  if (pcs !== undefined) body.preferCSSPageSize = pcs;
 
   return { ok: true, body };
 }
